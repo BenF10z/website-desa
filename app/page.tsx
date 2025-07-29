@@ -43,6 +43,61 @@ export default function Beranda() {
         </div>
       </section>
 
+      {/* About Section 1: Gambar kiri, teks kanan */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-20">
+            <div className="w-full md:w-1/2 flex justify-center">
+              <Image
+                src="/images/village-landscape.jpg"
+                alt="Kenteng Village Landscape"
+                width={600}
+                height={400}
+                className="rounded-2xl object-cover w-full h-auto max-h-[400px]"
+              />
+            </div>
+            <div className="w-full md:w-1/2 flex flex-col gap-8">
+              <div className="flex flex-col gap-2">
+                <div className="uppercase text-green-700 text-sm font-bold tracking-[0.2em]">about</div>
+                <div className="text-3xl md:text-4xl font-bold text-green-800 tracking-wide">About Kenteng Village</div>
+              </div>
+              <div className="text-gray-700 text-base leading-relaxed">
+                Tucked away in the misty highlands of Central Java, Kenteng is more than just a village — it’s a heartbeat. A place where mornings begin with the smell of firewood and the sound of roosters echoing through the valley. Where children run barefoot through rice fields, and elders share stories under the shade of banana trees.<br/><br/>
+                Here, time doesn’t rush — it gently flows.<br/>
+                You’ll hear laughter bubbling from bamboo kitchens. See weathered hands crafting baskets from memory, not manuals. Taste dishes that carry generations of tradition in every bite. Feel the rhythm of a village that moves not by clock, but by connection.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Section 2: Teks kiri, gambar kanan */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row-reverse items-center gap-10 md:gap-20">
+            <div className="w-full md:w-1/2 flex justify-center">
+              <Image
+                src="/images/village-landscape.jpg"
+                alt="Kenteng Village Activities"
+                width={600}
+                height={400}
+                className="rounded-2xl object-cover w-full h-auto max-h-[400px]"
+              />
+            </div>
+            <div className="w-full md:w-1/2 flex flex-col gap-8">
+              <div className="flex flex-col gap-2">
+                <div className="uppercase text-green-700 text-sm font-bold tracking-[0.2em]">kearifan lokal</div>
+                <div className="text-3xl md:text-4xl font-bold text-green-800 tracking-wide">Tradisi & Kehidupan</div>
+              </div>
+              <div className="text-gray-700 text-base leading-relaxed">
+                Di Kenteng, tradisi dan kehidupan berjalan beriringan. Setiap sudut desa menyimpan cerita, mulai dari upacara adat hingga kegiatan sehari-hari yang sarat makna. Masyarakatnya hidup dalam harmoni dengan alam, menjaga warisan leluhur dan menyambut perubahan dengan tangan terbuka.<br/><br/>
+                Kunjungi Kenteng dan rasakan sendiri kehangatan, keramahan, dan keunikan budaya yang tak lekang oleh waktu.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Quick Info Section */}
       <section className="py-16 bg-green-50">
         <div className="container mx-auto px-4">
