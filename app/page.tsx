@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, Users, Leaf, Camera } from "lucide-react"
+import ToursCarousel from "@/components/ToursCarousel"
 
 export default function Beranda() {
   return (
@@ -58,8 +59,8 @@ export default function Beranda() {
             </div>
             <div className="w-full md:w-1/2 flex flex-col gap-8">
               <div className="flex flex-col gap-2">
-                <div className="uppercase text-green-700 text-sm font-bold tracking-[0.2em]">about</div>
-                <div className="text-3xl md:text-4xl font-bold text-green-800 tracking-wide">About Kenteng Village</div>
+                <div className="uppercase text-sm font-bold tracking-[0.2em]" style={{ color: '#6E7869' }}>about</div>
+                <div className="text-3xl md:text-4xl font-bold tracking-wide" style={{ color: '#1A1A1A' }}>About Kenteng Village</div>
               </div>
               <div className="text-gray-700 text-base leading-relaxed">
                 Tucked away in the misty highlands of Central Java, Kenteng is more than just a village — it’s a heartbeat. A place where mornings begin with the smell of firewood and the sound of roosters echoing through the valley. Where children run barefoot through rice fields, and elders share stories under the shade of banana trees.<br/><br/>
@@ -86,12 +87,40 @@ export default function Beranda() {
             </div>
             <div className="w-full md:w-1/2 flex flex-col gap-8">
               <div className="flex flex-col gap-2">
-                <div className="uppercase text-green-700 text-sm font-bold tracking-[0.2em]">kearifan lokal</div>
-                <div className="text-3xl md:text-4xl font-bold text-green-800 tracking-wide">Tradisi & Kehidupan</div>
+                <div className="uppercase text-sm font-bold tracking-[0.2em]" style={{ color: '#6E7869' }}>kearifan lokal</div>
+                <div className="text-3xl md:text-4xl font-bold tracking-wide" style={{ color: '#1A1A1A' }}>Tradisi & Kehidupan</div>
               </div>
               <div className="text-gray-700 text-base leading-relaxed">
                 Di Kenteng, tradisi dan kehidupan berjalan beriringan. Setiap sudut desa menyimpan cerita, mulai dari upacara adat hingga kegiatan sehari-hari yang sarat makna. Masyarakatnya hidup dalam harmoni dengan alam, menjaga warisan leluhur dan menyambut perubahan dengan tangan terbuka.<br/><br/>
                 Kunjungi Kenteng dan rasakan sendiri kehangatan, keramahan, dan keunikan budaya yang tak lekang oleh waktu.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Tours Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center gap-8">
+            {/* Judul */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="uppercase text-sm font-bold tracking-[0.2em]" style={{ color: '#6E7869' }}>Tours</div>
+              <div className="text-3xl md:text-4xl font-bold tracking-wide" style={{ color: '#1A1A1A' }}>Popular Experiences</div>
+            </div>
+            {/* Card Wisata Slider */}
+            <div className="w-full flex flex-col gap-8">
+              <div className="w-full">
+                {/* Slider modern minimalis */}
+                <ToursCarousel />
+              </div>
+              {/* Tombol CTA */}
+              <div className="flex justify-center items-center gap-8">
+                <Link href="/paket-wisata">
+                  <div className="px-10 py-5 bg-[#1a1a1a] rounded-lg flex justify-center items-center gap-2.5 cursor-pointer hover:bg-[#333] transition">
+                    <span className="text-white text-lg font-bold tracking-wide">Start Your Journey</span>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -161,6 +190,7 @@ export default function Beranda() {
           </div>
         </div>
       </section>
+
 
       {/* CTA Section */}
       <section className="py-16 bg-green-600 text-white">
