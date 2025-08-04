@@ -18,11 +18,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // Hapus padding-top global pada <main>
   return (
     <html lang="id">
       <body className={inter.className}>
         <Navbar />
-        <main className="pt-16">{children}</main>
+        <main>{children}</main>
         <Footer />
       </body>
     </html>
