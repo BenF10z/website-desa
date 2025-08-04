@@ -128,7 +128,7 @@ export default function Beranda() {
           <div className="w-full max-w-[685px] flex flex-col justify-start items-center gap-8">
             <div className="w-full flex flex-col justify-start items-center gap-6">
               <div className="w-full text-white text-3xl md:text-4xl font-bold font-sans capitalize text-center">Ready to plan your journey to Kenteng?</div>
-              <div className="w-full md:w-[595px] text-center text-white text-base md:text-lg font-medium font-sans capitalize leading-relaxed">
+              <div className="w-full md:w-[595px] text-center text-white text-base md:text-lg font-sans capitalize leading-relaxed">
                 In Kenteng, time doesn’t tick, it breathes.<br />
                 Here, the moments aren’t curated for Instagram, they’re lived, raw and real.<br />
                 No filters. No crowds. Just you, the village, and everything in between.

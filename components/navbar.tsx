@@ -38,7 +38,7 @@ export default function Navbar() {
             <NavigationMenuList className="flex gap-6">
               {navigation.map((item) => (
                 <NavigationMenuItem key={item.name}>
-                  <NavigationMenuLink asChild className="text-black text-base font-medium font-poppins px-2 py-1 hover:text-green-600 transition-colors">
+                  <NavigationMenuLink asChild className="text-black text-base font-medium font-poppins px-2 py-1 hover:text-white transition-colors">
                     <Link href={item.href}>{item.name}</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
