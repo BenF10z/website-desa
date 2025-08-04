@@ -3,95 +3,57 @@ import { MapPin, Phone, Mail, Facebook, Instagram, Twitter } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="bg-green-800 text-white">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-2xl font-bold mb-4">Desa Kenteng</h3>
-            <p className="text-green-200 mb-4">
-              Desa yang kaya akan potensi alam, budaya, dan kearifan lokal di dataran tinggi Indonesia.
-            </p>
-            <div className="flex space-x-4">
-              <Facebook className="w-6 h-6 text-green-300 hover:text-white cursor-pointer" />
-              <Instagram className="w-6 h-6 text-green-300 hover:text-white cursor-pointer" />
-              <Twitter className="w-6 h-6 text-green-300 hover:text-white cursor-pointer" />
+    <footer className="bg-green-800 text-white w-full">
+      <div className="w-full px-6 md:px-16 lg:px-[120px] py-10 md:py-16 flex flex-col md:flex-row justify-between items-start gap-12 md:gap-0 overflow-hidden">
+        <div className="text-white text-2xl md:text-[32px] font-black font-sans md:font-['Satoshi'] mb-6 md:mb-0">Kenteng Village</div>
+        <div className="flex flex-col md:flex-row justify-start items-start gap-12 md:gap-[80px] lg:gap-[107px] w-full md:w-auto">
+          {/* MENU */}
+          <div className="flex flex-col justify-start items-start gap-4 md:gap-6 min-w-[120px]">
+            <div className="text-white text-sm md:text-[15px] font-bold tracking-wide font-sans md:font-['Satoshi']">MENU</div>
+            <div className="flex flex-col justify-start items-start gap-2 md:gap-4">
+              <Link href="/" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Home</Link>
+              <Link href="/profil" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">About us</Link>
+              <Link href="/paket-wisata" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Tours</Link>
+              <Link href="#" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Booking</Link>
+              <Link href="/gallery" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Contact us</Link>
             </div>
           </div>
-
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Menu</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-green-200 hover:text-white">
-                  Beranda
-                </Link>
-              </li>
-              <li>
-                <Link href="/profil" className="text-green-200 hover:text-white">
-                  Profil
-                </Link>
-              </li>
-              <li>
-                <Link href="/potensi-desa" className="text-green-200 hover:text-white">
-                  Potensi Desa
-                </Link>
-              </li>
-              <li>
-                <Link href="/bumdes" className="text-green-200 hover:text-white">
-                  Bumdes
-                </Link>
-              </li>
-            </ul>
+          {/* RESOURCES */}
+          <div className="flex flex-col justify-start items-start gap-4 md:gap-6 min-w-[120px]">
+            <div className="text-white text-sm md:text-[15px] font-bold tracking-wide font-sans md:font-['Satoshi']">RESOURCES</div>
+            <div className="flex flex-col justify-start items-start gap-2 md:gap-4">
+              <Link href="#" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Blog</Link>
+              <Link href="#" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Privacy Policy</Link>
+              <Link href="#" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Terms & Condition</Link>
+            </div>
           </div>
-
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Layanan</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/paket-wisata" className="text-green-200 hover:text-white">
-                  Paket Wisata
-                </Link>
-              </li>
-              <li>
-                <Link href="/gallery" className="text-green-200 hover:text-white">
-                  Gallery
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-green-200 hover:text-white">
-                  Produk Lokal
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-green-200 hover:text-white">
-                  Homestay
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Kontak</h4>
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <MapPin className="w-5 h-5 text-green-300 mr-2" />
-                <span className="text-green-200">Desa Kenteng, Kecamatan...</span>
+          {/* INFORMATION */}
+          <div className="flex flex-col justify-start items-start gap-4 md:gap-6 min-w-[120px]">
+            <div className="text-white text-sm md:text-[15px] font-bold tracking-wide font-sans md:font-['Satoshi']">INFORMATION</div>
+            <div className="flex flex-col justify-start items-start gap-2 md:gap-4">
+              <div className="inline-flex justify-start items-center gap-2.5">
+                <MapPin className="w-[22px] h-[22px] text-green-200" />
+                <span className="text-green-200 text-sm font-normal font-sans">Desa Kenteng</span>
               </div>
-              <div className="flex items-center">
-                <Phone className="w-5 h-5 text-green-300 mr-2" />
-                <span className="text-green-200">+62 xxx-xxxx-xxxx</span>
+              <div className="inline-flex justify-start items-center gap-2.5">
+                <Phone className="w-[22px] h-[22px] text-green-200" />
+                <span className="text-green-200 text-sm font-normal font-sans">+62 xxx-xxxx-xxxx</span>
               </div>
-              <div className="flex items-center">
-                <Mail className="w-5 h-5 text-green-300 mr-2" />
-                <span className="text-green-200">info@desakenteng.id</span>
+              <div className="inline-flex justify-start items-center gap-2.5">
+                <Mail className="w-[22px] h-[22px] text-green-200" />
+                <span className="text-green-200 text-sm font-normal font-sans">info@desakenteng.id</span>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="border-t border-green-700 mt-8 pt-8 text-center">
-          <p className="text-green-200">© 2024 Desa Kenteng. Semua hak cipta dilindungi.</p>
+      </div>
+      <div className="w-full border-t border-green-700 pt-6 pb-4 text-center">
+        <div className="flex justify-center items-center gap-4 mb-2">
+          <a href="#" aria-label="Facebook"><Facebook className="w-6 h-6 text-green-300 hover:text-white cursor-pointer" /></a>
+          <a href="#" aria-label="Instagram"><Instagram className="w-6 h-6 text-green-300 hover:text-white cursor-pointer" /></a>
+          <a href="#" aria-label="Twitter"><Twitter className="w-6 h-6 text-green-300 hover:text-white cursor-pointer" /></a>
         </div>
+        <p className="text-green-200 text-sm">© 2025 Desa Kenteng. Semua hak cipta dilindungi.</p>
       </div>
     </footer>
   )
