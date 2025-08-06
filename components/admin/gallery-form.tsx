@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Edit, Trash2 } from "lucide-react"
+import { Plus, Edit, Trash2, Upload, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface GalleryItem {
@@ -26,7 +25,10 @@ interface GalleryItem {
 export default function GalleryForm() {
   const [items, setItems] = useState<GalleryItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
@@ -58,6 +60,43 @@ export default function GalleryForm() {
       }
     } catch (error) {
       console.error("Error fetching gallery items:", error)
+    }
+  }
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setIsUploading(true)
+    
+    try {
+      const uploadFormData = new FormData()
+      uploadFormData.append('file', file)
+
+      const response = await fetch('/api/gallery/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      })
+
+      if (response.ok) {
+        const { url } = await response.json()
+        setFormData({ ...formData, image_url: url })
+        setImagePreview(url)
+        toast({
+          title: "Berhasil!",
+          description: "Gambar berhasil diupload",
+        })
+      } else {
+        throw new Error("Upload failed")
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Gagal mengupload gambar",
+        variant: "destructive",
+      })
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -106,6 +145,7 @@ export default function GalleryForm() {
       image_url: item.image_url,
       alt_text: item.alt_text,
     })
+    setImagePreview(item.image_url)
     setEditingId(item.id)
   }
 
@@ -141,7 +181,11 @@ export default function GalleryForm() {
       image_url: "",
       alt_text: "",
     })
+    setImagePreview(null)
     setEditingId(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
   }
 
   return (
@@ -158,6 +202,57 @@ export default function GalleryForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Image Upload Section */}
+            <div className="space-y-2">
+              <Label>Upload Gambar</Label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                {imagePreview ? (
+                  <div className="relative">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="max-w-full h-48 object-cover rounded-lg mx-auto"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="destructive"
+                      className="absolute top-2 right-2"
+                      onClick={() => {
+                        setImagePreview(null)
+                        setFormData({ ...formData, image_url: "" })
+                        if (fileInputRef.current) fileInputRef.current.value = ""
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="mt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                      >
+                        {isUploading ? "Mengupload..." : "Pilih Gambar"}
+                      </Button>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500">PNG, JPG, JPEG hingga 5MB</p>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="title">Judul</Label>
@@ -202,17 +297,6 @@ export default function GalleryForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image_url">URL Gambar</Label>
-              <Input
-                id="image_url"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="alt_text">Alt Text</Label>
               <Input
                 id="alt_text"
@@ -224,7 +308,11 @@ export default function GalleryForm() {
             </div>
 
             <div className="flex gap-2">
-              <Button type="submit" disabled={isLoading} className="bg-green-600 hover:bg-green-700">
+              <Button 
+                type="submit" 
+                disabled={isLoading || !formData.image_url} 
+                className="bg-green-600 hover:bg-green-700"
+              >
                 {isLoading ? "Menyimpan..." : editingId ? "Perbarui" : "Tambah"}
               </Button>
               {editingId && (
