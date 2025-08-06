@@ -14,7 +14,7 @@ export default function Beranda() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen w-full">
+      <section className="relative h-screen w-full flex items-center">
         <Image
           src="/images/village-landscape.jpg"
           alt="Pemandangan Desa Kenteng dengan sawah hijau dan pegunungan"
@@ -23,6 +23,28 @@ export default function Beranda() {
           priority
         />
         <div className="absolute inset-0 bg-black/40" />
+        
+        {/* Hero Content */}
+        <div className="relative z-10 w-full">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col justify-start items-start gap-8 md:gap-12 max-w-4xl">
+              <div className="flex flex-col justify-start items-start gap-6 md:gap-8">
+                <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold font-sans tracking-wide leading-tight">
+                  Explore Kenteng<br />
+                  slow moments, rich stories.
+                </h1>
+                <p className="text-white text-base md:text-lg font-normal font-sans tracking-tight max-w-2xl leading-relaxed">
+                  Plan your next adventure with us. Scroll down to discover local tours, events, and real connections.
+                </p>
+              </div>
+              <Link href="/paket-wisata">
+                <div className="px-8 md:px-10 py-4 md:py-5 bg-white rounded-lg inline-flex justify-center items-center gap-2.5 cursor-pointer hover:bg-gray-100 transition">
+                  <span className="text-[#1a1a1a] text-base md:text-lg font-bold font-sans tracking-wide">Explore Tours</span>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* About Section 1: Gambar kiri, teks kanan */}
@@ -156,20 +178,20 @@ export default function Beranda() {
             <div className="w-full md:w-2/3">
               <div className="pb-6 flex flex-col gap-2.5">
                 {/* Accordion FAQ */}
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion type="single" collapsible className="w-full divide-y divide-[#6e7869]/20">
                   <AccordionItem value="q1">
                     <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
                       Where is Kenteng Village located?
                     </AccordionTrigger>
-                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight border-b border-[#6e7869] pb-6">
-                      Kenteng is nestled in the highlands of Bandungan, Central Java — about 1 hour from Semarang City. It’s easy to reach by car or motorbike, and we can help arrange transportation if needed.
+                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
+                      Kenteng is nestled in the highlands of Bandungan, Central Java — about 1 hour from Semarang City. It's easy to reach by car or motorbike, and we can help arrange transportation if needed.
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="q2">
                     <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
                       What kind of tours do you offer?
                     </AccordionTrigger>
-                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight border-b border-[#6e7869] pb-6">
+                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
                       We offer a variety of tours: nature walks, cultural experiences, culinary journeys, and hands-on workshops with local artisans. You can join a group or request a custom itinerary.
                     </AccordionContent>
                   </AccordionItem>
@@ -177,7 +199,7 @@ export default function Beranda() {
                     <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
                       Do I need to book in advance?
                     </AccordionTrigger>
-                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight border-b border-[#6e7869] pb-6">
+                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
                       Advance booking is recommended, especially for weekends and holidays, to ensure availability and the best experience. However, walk-ins are welcome if space allows.
                     </AccordionContent>
                   </AccordionItem>
@@ -185,7 +207,7 @@ export default function Beranda() {
                     <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
                       Can I visit Kenteng without joining a tour?
                     </AccordionTrigger>
-                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight border-b border-[#6e7869] pb-6">
+                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
                       Yes, you are welcome to explore Kenteng independently. Our team is happy to provide tips and recommendations for your visit.
                     </AccordionContent>
                   </AccordionItem>
@@ -193,7 +215,7 @@ export default function Beranda() {
                     <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
                       Do you speak English?
                     </AccordionTrigger>
-                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight border-b border-[#6e7869] pb-6">
+                    <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
                       Yes, our guides and staff speak English and Bahasa Indonesia. We strive to make every guest feel welcome and understood.
                     </AccordionContent>
                   </AccordionItem>
