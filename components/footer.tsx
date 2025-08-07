@@ -25,7 +25,7 @@ export default function Footer() {
           <div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-20">
             {/* Logo and Description */}
             <div className="flex flex-col gap-6 lg:max-w-[400px]">
-              <div className="text-white text-2xl md:text-3xl font-bold font-['Poppins']">
+              <div className="text-white text-2xl md:text-3xl font-bold font-sans">
                 Kenteng Village
               </div>
               <p className="text-gray-100 text-sm md:text-base leading-relaxed">
@@ -38,7 +38,7 @@ export default function Footer() {
             <div className="flex flex-col md:flex-row gap-12 md:gap-16 lg:gap-20">
               {/* Quick Links */}
               <div className="flex flex-col gap-4">
-                <h3 className="text-white text-lg font-semibold font-['Poppins']">
+                <h3 className="text-white text-lg font-semibold font-sans">
                   MENU UTAMA
                 </h3>
                 <div className="flex flex-col gap-3">
@@ -71,7 +71,7 @@ export default function Footer() {
 
               {/* Services */}
               <div className="flex flex-col gap-4">
-                <h3 className="text-white text-lg font-semibold font-['Poppins']">
+                <h3 className="text-white text-lg font-semibold font-sans">
                   LAYANAN
                 </h3>
                 <div className="flex flex-col gap-3">
@@ -104,7 +104,7 @@ export default function Footer() {
 
               {/* Contact Info */}
               <div className="flex flex-col gap-4">
-                <h3 className="text-white text-lg font-semibold font-['Poppins']">
+                <h3 className="text-white text-lg font-semibold font-sans">
                   KONTAK
                 </h3>
                 <div className="flex flex-col gap-3">

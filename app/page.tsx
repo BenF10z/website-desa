@@ -121,8 +121,8 @@ export default function Beranda() {
               {/* Tombol CTA */}
               <div className="flex justify-center items-center gap-8">
                 <Link href="/paket-wisata">
-                  <div className="px-10 py-5 bg-[#1a1a1a] rounded-lg flex justify-center items-center gap-2.5 cursor-pointer hover:bg-[#333] transition">
-                    <span className="text-white text-lg font-bold tracking-wide">Start Your Journey</span>
+                  <div className="px-10 py-4 bg-[#1a1a1a] rounded-lg flex justify-center items-center gap-2.5 cursor-pointer hover:bg-[#333] transition">
+                    <span className="text-white text-base font-bold tracking-wide">Start Your Journey</span>
                   </div>
                 </Link>
               </div>
@@ -131,40 +131,7 @@ export default function Beranda() {
         </div>
       </section>
 
-      {/* About Section - Figma inspired, responsive, with background overlay */}
-      <section className="relative py-12 flex items-center justify-center min-h-[340px] md:min-h-[420px]">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <Image
-            src="/images/village-landscape.jpg"
-            alt="Pemandangan Desa Kenteng dengan pegunungan"
-            fill
-            className="object-cover"
-            priority
-          />
-          {/* Overlay: green opacity */}
-          <div className="absolute inset-0 bg-green-900/60" />
-        </div>
-        {/* Content */}
-        <div className="relative z-10 w-full flex justify-center items-center px-4">
-          <div className="w-full max-w-[685px] flex flex-col justify-start items-center gap-8">
-            <div className="w-full flex flex-col justify-start items-center gap-6">
-              <div className="w-full text-white text-3xl md:text-4xl font-bold font-sans capitalize text-center">Ready to plan your journey to Kenteng?</div>
-              <div className="w-full md:w-[595px] text-center text-white text-base md:text-lg font-sans capitalize leading-relaxed">
-                In Kenteng, time doesn’t tick, it breathes.<br />
-                Here, the moments aren’t curated for Instagram, they’re lived, raw and real.<br />
-                No filters. No crowds. Just you, the village, and everything in between.
-              </div>
-            </div>
-            <Link href="/paket-wisata" className="w-fit">
-              <div className="px-8 md:px-10 py-4 md:py-5 bg-white rounded-lg inline-flex justify-center items-center gap-2.5 cursor-pointer hover:bg-gray-100 transition">
-                <span className="text-[#1a1a1a] text-base md:text-lg font-bold font-sans tracking-wide">Start Your Journey</span>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
+      
       {/* FAQ Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
