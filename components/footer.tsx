@@ -1,59 +1,176 @@
 import Link from "next/link"
+import Image from "next/image"
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="bg-green-800 text-white w-full">
-      <div className="w-full px-6 md:px-16 lg:px-[120px] py-10 md:py-16 flex flex-col md:flex-row justify-between items-start gap-12 md:gap-0 overflow-hidden">
-        <div className="text-white text-2xl md:text-[32px] font-black font-sans md:font-['Satoshi'] mb-6 md:mb-0">Kenteng Village</div>
-        <div className="flex flex-col md:flex-row justify-start items-start gap-12 md:gap-[80px] lg:gap-[107px] w-full md:w-auto">
-          {/* MENU */}
-          <div className="flex flex-col justify-start items-start gap-4 md:gap-6 min-w-[120px]">
-            <div className="text-white text-sm md:text-[15px] font-bold tracking-wide font-sans md:font-['Satoshi']">MENU</div>
-            <div className="flex flex-col justify-start items-start gap-2 md:gap-4">
-              <Link href="/" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Home</Link>
-              <Link href="/profil" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">About us</Link>
-              <Link href="/paket-wisata" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Tours</Link>
-              <Link href="#" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Booking</Link>
-              <Link href="/gallery" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Contact us</Link>
-            </div>
-          </div>
-          {/* RESOURCES */}
-          <div className="flex flex-col justify-start items-start gap-4 md:gap-6 min-w-[120px]">
-            <div className="text-white text-sm md:text-[15px] font-bold tracking-wide font-sans md:font-['Satoshi']">RESOURCES</div>
-            <div className="flex flex-col justify-start items-start gap-2 md:gap-4">
-              <Link href="#" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Blog</Link>
-              <Link href="#" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Privacy Policy</Link>
-              <Link href="#" className="text-green-200 text-sm font-normal font-sans hover:text-white transition">Terms & Condition</Link>
-            </div>
-          </div>
-          {/* INFORMATION */}
-          <div className="flex flex-col justify-start items-start gap-4 md:gap-6 min-w-[120px]">
-            <div className="text-white text-sm md:text-[15px] font-bold tracking-wide font-sans md:font-['Satoshi']">INFORMATION</div>
-            <div className="flex flex-col justify-start items-start gap-2 md:gap-4">
-              <div className="inline-flex justify-start items-center gap-2.5">
-                <MapPin className="w-[22px] h-[22px] text-green-200" />
-                <span className="text-green-200 text-sm font-normal font-sans">Desa Kenteng</span>
+    <footer className="bg-white text-gray-800 w-full">
+      {/* Single Background Image for Entire Footer */}
+      <div className="relative w-full overflow-hidden">
+        {/* Background Image - ONE IMAGE FOR EVERYTHING */}
+        <div className="absolute inset-0">
+          <Image
+            src="https://picsum.photos/seed/village-footer/1440/600"
+            alt="Desa Kenteng Background"
+            fill
+            className="object-cover"
+            priority={false}
+          />
+          {/* Gradient overlay for better readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/80" />
+        </div>
+        
+        {/* Main Footer Content */}
+        <div className="relative z-10 w-full px-6 md:px-16 lg:px-[120px] py-12 md:py-16">
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-20">
+            {/* Logo and Description */}
+            <div className="flex flex-col gap-6 lg:max-w-[400px]">
+              <div className="text-white text-2xl md:text-3xl font-bold font-sans">
+                Kenteng Village
               </div>
-              <div className="inline-flex justify-start items-center gap-2.5">
-                <Phone className="w-[22px] h-[22px] text-green-200" />
-                <span className="text-green-200 text-sm font-normal font-sans">+62 xxx-xxxx-xxxx</span>
+              <p className="text-gray-100 text-sm md:text-base leading-relaxed">
+                Desa wisata yang menawarkan pengalaman autentik di dataran tinggi Jawa Tengah.
+                Nikmati keindahan alam, budaya lokal, dan kehangatan masyarakat desa.
+              </p>
+            </div>
+
+            {/* Navigation Links */}
+            <div className="flex flex-col md:flex-row gap-12 md:gap-16 lg:gap-20">
+              {/* Quick Links */}
+              <div className="flex flex-col gap-4">
+                <h3 className="text-white text-lg font-semibold font-sans">
+                  MENU UTAMA
+                </h3>
+                <div className="flex flex-col gap-3">
+                  <Link
+                    href="/"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    Beranda
+                  </Link>
+                  <Link
+                    href="/profil"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    Profil Desa
+                  </Link>
+                  <Link
+                    href="/potensi-desa"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    Potensi Desa
+                  </Link>
+                  <Link
+                    href="/bumdes"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    BUMDes
+                  </Link>
+                </div>
               </div>
-              <div className="inline-flex justify-start items-center gap-2.5">
-                <Mail className="w-[22px] h-[22px] text-green-200" />
-                <span className="text-green-200 text-sm font-normal font-sans">info@desakenteng.id</span>
+
+              {/* Services */}
+              <div className="flex flex-col gap-4">
+                <h3 className="text-white text-lg font-semibold font-sans">
+                  LAYANAN
+                </h3>
+                <div className="flex flex-col gap-3">
+                  <Link
+                    href="/paket-wisata"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    Paket Wisata
+                  </Link>
+                  <Link
+                    href="/gallery"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    Galeri
+                  </Link>
+                  <Link
+                    href="#"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    Homestay
+                  </Link>
+                  <Link
+                    href="#"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    Booking Online
+                  </Link>
+                </div>
+              </div>
+
+              {/* Contact Info */}
+              <div className="flex flex-col gap-4">
+                <h3 className="text-white text-lg font-semibold font-sans">
+                  KONTAK
+                </h3>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-200 text-sm md:text-base">
+                      Desa Kenteng, Kec. Bandungan
+                      <br />
+                      Kab. Semarang, Jawa Tengah
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-5 h-5 text-white flex-shrink-0" />
+                    <span className="text-gray-200 text-sm md:text-base">
+                      +62 xxx-xxxx-xxxx
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-white flex-shrink-0" />
+                    <span className="text-gray-200 text-sm md:text-base">
+                      info@desakenteng.id
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="w-full border-t border-green-700 pt-6 pb-4 text-center">
-        <div className="flex justify-center items-center gap-4 mb-2">
-          <a href="#" aria-label="Facebook"><Facebook className="w-6 h-6 text-green-300 hover:text-white cursor-pointer" /></a>
-          <a href="#" aria-label="Instagram"><Instagram className="w-6 h-6 text-green-300 hover:text-white cursor-pointer" /></a>
-          <a href="#" aria-label="Twitter"><Twitter className="w-6 h-6 text-green-300 hover:text-white cursor-pointer" /></a>
+
+        {/* Bottom Footer - SAME BACKGROUND, NO BORDER */}
+        <div className="relative z-10 px-6 md:px-16 lg:px-[120px] py-6 border-t border-white/20">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            {/* Copyright */}
+            <p className="text-gray-200 text-sm text-center md:text-left">
+              © 2025 Desa Kenteng. Semua hak cipta dilindungi undang-undang.
+            </p>
+
+            {/* Social Media */}
+            <div className="flex items-center gap-4">
+              <span className="text-gray-200 text-sm hidden md:block">Ikuti kami:</span>
+              <div className="flex items-center gap-3">
+                <a
+                  href="#"
+                  aria-label="Facebook"
+                  className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200"
+                >
+                  <Facebook className="w-4 h-4 text-gray-900" />
+                </a>
+                <a
+                  href="#"
+                  aria-label="Instagram"
+                  className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200"
+                >
+                  <Instagram className="w-4 h-4 text-gray-900" />
+                </a>
+                <a
+                  href="#"
+                  aria-label="Twitter"
+                  className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200"
+                >
+                  <Twitter className="w-4 h-4 text-gray-900" />
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-        <p className="text-green-200 text-sm">© 2025 Desa Kenteng. Semua hak cipta dilindungi.</p>
       </div>
     </footer>
   )
