@@ -246,7 +246,7 @@ export default function NewsSection() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[#3e5880] text-sm font-normal tracking-tight">Penulis Tamu</span>
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">25/05/2025</span>
+                      <span className="text-[#3e5880] font-normal tracking-tight">25/05/2025</span>
                     </div>
                   </div>
                   <div className="flex flex-col gap-4">
@@ -289,7 +289,7 @@ export default function NewsSection() {
 
             {/* CTA Button */}
             <div className="flex justify-center">
-              <CTAButton href="/berita">
+              <CTAButton href="/berita-desa">
                 Baca Berita Lainnya
               </CTAButton>
             </div>
