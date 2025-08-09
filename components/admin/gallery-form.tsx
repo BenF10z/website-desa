@@ -22,7 +22,7 @@ interface GalleryItem {
   created_at: string
 }
 
-export default function GalleryForm() {
+export default function GalleryForm({ onChange }: { onChange?: () => void }) {
   const [items, setItems] = useState<GalleryItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -121,8 +121,8 @@ export default function GalleryForm() {
           title: "Berhasil!",
           description: editingId ? "Item gallery berhasil diperbarui" : "Item gallery berhasil ditambahkan",
         })
-        resetForm()
-        fetchGalleryItems()
+        fetchGalleryItems();
+        if (onChange) onChange();
       } else {
         throw new Error("Failed to save item")
       }
@@ -162,7 +162,8 @@ export default function GalleryForm() {
           title: "Berhasil!",
           description: "Item gallery berhasil dihapus",
         })
-        fetchGalleryItems()
+        fetchGalleryItems();
+        if (onChange) onChange();
       }
     } catch (error) {
       toast({

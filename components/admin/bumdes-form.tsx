@@ -25,7 +25,7 @@ interface BumdesItem {
   created_at: string
 }
 
-export default function BumdesForm() {
+export default function BumdesForm( { onChange }: { onChange?: () => void }) {
   const [items, setItems] = useState<BumdesItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -89,6 +89,7 @@ export default function BumdesForm() {
         })
         resetForm()
         fetchBumdesItems()
+        if (onChange) onChange()
       } else {
         throw new Error("Failed to save bumdes item")
       }
@@ -129,7 +130,8 @@ export default function BumdesForm() {
           title: "Berhasil!",
           description: "Unit Bumdes berhasil dihapus",
         })
-        fetchBumdesItems()
+        fetchBumdesItems();
+        if (onChange) onChange();
       }
     } catch (error) {
       toast({

@@ -27,9 +27,8 @@ export default function AdminDashboard() {
     wisata: 0,
   });
 
-  useEffect(() => {
-    async function fetchCounts() {
-      const [galleryRes, profilRes, potensiRes, bumdesRes, wisataRes] =
+  const fetchCounts = async () => {
+    const [galleryRes, profilRes, potensiRes, bumdesRes, wisataRes] =
         await Promise.all([
           fetch("/api/gallery"),
           fetch("/api/profil"),
@@ -50,7 +49,9 @@ export default function AdminDashboard() {
         bumdes: bumdes.length,
         wisata: wisata.length,
       });
-    }
+  };
+
+  useEffect(() => {
     fetchCounts();
   }, []);
 
@@ -179,23 +180,23 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="gallery">
-            <GalleryForm />
+            <GalleryForm onChange={fetchCounts}/>
           </TabsContent>
 
           <TabsContent value="profil">
-            <ProfilForm />
+            <ProfilForm onChange={fetchCounts}/>
           </TabsContent>
 
           <TabsContent value="potensi">
-            <PotensiForm />
+            <PotensiForm onChange={fetchCounts}/>
           </TabsContent>
 
           <TabsContent value="bumdes">
-            <BumdesForm />
+            <BumdesForm onChange={fetchCounts}/>
           </TabsContent>
 
           <TabsContent value="wisata">
-            <PaketWisataForm />
+            <PaketWisataForm onChange={fetchCounts}/>
           </TabsContent>
         </Tabs>
       </div>
