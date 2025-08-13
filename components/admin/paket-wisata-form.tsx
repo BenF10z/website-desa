@@ -26,7 +26,7 @@ interface PaketWisata {
   created_at: string
 }
 
-export default function PaketWisataForm() {
+export default function PaketWisataForm({ onChange }: { onChange?: () => void }) {
   const [items, setItems] = useState<PaketWisata[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -81,12 +81,8 @@ export default function PaketWisataForm() {
       })
 
       if (response.ok) {
-        toast({
-          title: "Berhasil!",
-          description: editingId ? "Paket wisata berhasil diperbarui" : "Paket wisata berhasil ditambahkan",
-        })
-        resetForm()
-        fetchPaketWisata()
+        fetchPaketWisata();
+        if (onChange) onChange();
       } else {
         throw new Error("Failed to save paket wisata")
       }
@@ -129,7 +125,8 @@ export default function PaketWisataForm() {
           title: "Berhasil!",
           description: "Paket wisata berhasil dihapus",
         })
-        fetchPaketWisata()
+        fetchPaketWisata();
+        if (onChange) onChange();
       }
     } catch (error) {
       toast({

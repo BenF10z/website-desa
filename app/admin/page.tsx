@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/auth-context";
+import ProtectedRoute from "@/components/auth/protected-route";
 import {
   Card,
   CardContent,
@@ -10,14 +12,18 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ImageIcon, Users, Leaf, Store, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ImageIcon, Users, Leaf, Store, MapPin, LogOut } from "lucide-react";
 import GalleryForm from "@/components/admin/gallery-form";
 import ProfilForm from "@/components/admin/profil-form";
 import PotensiForm from "@/components/admin/potensi-form";
 import BumdesForm from "@/components/admin/bumdes-form";
 import PaketWisataForm from "@/components/admin/paket-wisata-form";
+import { useToast } from "@/hooks/use-toast";
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [counts, setCounts] = useState({
     gallery: 0,
@@ -26,33 +32,64 @@ export default function AdminDashboard() {
     bumdes: 0,
     wisata: 0,
   });
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchCounts() {
+  const fetchCounts = async () => {
+    try {
+      setLoading(true);
       const [galleryRes, profilRes, potensiRes, bumdesRes, wisataRes] =
         await Promise.all([
-          fetch("/api/gallery"),
-          fetch("/api/profil"),
-          fetch("/api/potensi-desa"),
-          fetch("/api/bumdes"),
-          fetch("/api/paket-wisata"),
+          fetch("/api/gallery").catch(() => ({ ok: false })),
+          fetch("/api/profil").catch(() => ({ ok: false })),
+          fetch("/api/potensi-desa").catch(() => ({ ok: false })),
+          fetch("/api/bumdes").catch(() => ({ ok: false })),
+          fetch("/api/paket-wisata").catch(() => ({ ok: false })),
         ]);
-      const gallery = galleryRes.ok ? await galleryRes.json() : [];
-      const profil = profilRes.ok ? await profilRes.json() : [];
-      const potensi = potensiRes.ok ? await potensiRes.json() : [];
-      const bumdes = bumdesRes.ok ? await bumdesRes.json() : [];
-      const wisata = wisataRes.ok ? await wisataRes.json() : [];
+
+      const gallery = galleryRes.ok ? await galleryRes.json().catch(() => []) : [];
+      const profil = profilRes.ok ? await profilRes.json().catch(() => []) : [];
+      const potensi = potensiRes.ok ? await potensiRes.json().catch(() => []) : [];
+      const bumdes = bumdesRes.ok ? await bumdesRes.json().catch(() => []) : [];
+      const wisata = wisataRes.ok ? await wisataRes.json().catch(() => []) : [];
 
       setCounts({
-        gallery: gallery.length,
-        profil: profil.length,
-        potensi: potensi.length,
-        bumdes: bumdes.length,
-        wisata: wisata.length,
+        gallery: Array.isArray(gallery) ? gallery.length : 0,
+        profil: Array.isArray(profil) ? profil.length : 0,
+        potensi: Array.isArray(potensi) ? potensi.length : 0,
+        bumdes: Array.isArray(bumdes) ? bumdes.length : 0,
+        wisata: Array.isArray(wisata) ? wisata.length : 0,
       });
+    } catch (error) {
+      console.error("Error fetching counts:", error);
+      toast({
+        title: "Error",
+        description: "Gagal memuat data dashboard",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchCounts();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logout Berhasil",
+        description: "Anda telah keluar dari admin dashboard",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Gagal logout",
+        variant: "destructive",
+      });
+    }
+  };
 
   const stats = [
     {
@@ -87,6 +124,17 @@ export default function AdminDashboard() {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600"></div>
+          <p className="mt-4 text-gray-600">Memuat dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -101,7 +149,23 @@ export default function AdminDashboard() {
                 Kelola konten website Desa Kenteng
               </p>
             </div>
-            <Badge className="bg-green-600">Admin Panel</Badge>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <Badge className="bg-green-600 mb-2">Admin Panel</Badge>
+                <p className="text-sm text-gray-600">
+                  {user?.email}
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="border-red-300 text-red-600 hover:bg-red-50"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Keluar
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -142,63 +206,48 @@ export default function AdminDashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Aktivitas Terbaru</CardTitle>
+                <CardTitle>Selamat Datang</CardTitle>
                 <CardDescription>
-                  Perubahan konten dalam 7 hari terakhir
+                  Dashboard admin untuk mengelola konten website Desa Kenteng
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <ImageIcon className="h-5 w-5 text-green-600" />
-                      <div>
-                        <p className="font-medium">Gallery baru ditambahkan</p>
-                        <p className="text-sm text-gray-600">
-                          Foto festival budaya desa
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-sm text-gray-500">2 jam lalu</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <MapPin className="h-5 w-5 text-blue-600" />
-                      <div>
-                        <p className="font-medium">Paket wisata diperbarui</p>
-                        <p className="text-sm text-gray-600">
-                          Paket Wisata Alam 1 Hari
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-sm text-gray-500">1 hari lalu</span>
-                  </div>
-                </div>
+                <p className="text-gray-600">
+                  Gunakan menu di atas untuk mengelola berbagai konten website seperti gallery, profil desa, potensi desa, unit BUMDes, dan paket wisata.
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="gallery">
-            <GalleryForm />
+            <GalleryForm onChange={fetchCounts} />
           </TabsContent>
 
           <TabsContent value="profil">
-            <ProfilForm />
+            <ProfilForm onChange={fetchCounts} />
           </TabsContent>
 
           <TabsContent value="potensi">
-            <PotensiForm />
+            <PotensiForm onChange={fetchCounts} />
           </TabsContent>
 
           <TabsContent value="bumdes">
-            <BumdesForm />
+            <BumdesForm onChange={fetchCounts} />
           </TabsContent>
 
           <TabsContent value="wisata">
-            <PaketWisataForm />
+            <PaketWisataForm onChange={fetchCounts} />
           </TabsContent>
         </Tabs>
       </div>
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <ProtectedRoute>
+      <AdminDashboardContent />
+    </ProtectedRoute>
   );
 }
