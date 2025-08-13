@@ -116,13 +116,6 @@ export default function BeritaDesa() {
       {/* Header Section - Isolated dengan proper z-index */}
       <section className="relative w-full h-[276px] z-10">
         <div className="absolute inset-0 bg-[#7e8e7e]" />
-        <Image
-          src="https://picsum.photos/id/237/1440/276"
-          alt="Berita Desa Header"
-          fill
-          className="object-cover mix-blend-overlay"
-          priority
-        />
         <div className="absolute inset-0 flex items-center justify-center z-20">
           <h1 className="text-white text-4xl md:text-6xl font-black font-['Satoshi'] text-center">
             Berita Desa
