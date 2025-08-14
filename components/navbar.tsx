@@ -46,6 +46,7 @@ const navigation = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [openDropdowns, setOpenDropdowns] = useState<string[]>([])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,6 +57,15 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const toggleDropdown = (name: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    setOpenDropdowns(prev => 
+      prev.includes(name) 
+        ? prev.filter(item => item !== name) 
+        : [...prev, name]
+    )
+  }
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -88,19 +98,24 @@ export default function Navbar() {
                           {item.name}
                         </Link>
                       </NavigationMenuTrigger>
-                      <NavigationMenuContent>
-                        <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                          {item.dropdown.map((subItem) => (
-                            <Link
-                              key={subItem.name}
-                              href={subItem.href}
-                              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            >
-                              <div className="text-sm font-medium leading-none text-[#1A3300] hover:text-green-600">
-                                {subItem.name}
-                              </div>
-                            </Link>
-                          ))}
+                      <NavigationMenuContent className="left-1/2 transform -translate-x-1/2">
+                        <div className="w-auto p-2 bg-white/95 backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg">
+                          <div className="flex flex-row gap-2 items-center">
+                            {item.dropdown.map((subItem, index) => (
+                              <Link
+                                key={subItem.name}
+                                href={subItem.href}
+                                className="group flex items-center px-4 py-3 text-sm font-medium text-[#143051] hover:text-[#6e7869] hover:bg-gray-50/80 rounded-md transition-all duration-200 ease-in-out whitespace-nowrap"
+                              >
+                                <div className="flex items-center">
+                                  <div className="w-1.5 h-1.5 bg-[#6e7869] rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                                  <span className="group-hover:translate-x-1 transition-transform duration-200">
+                                    {subItem.name}
+                                  </span>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
                         </div>
                       </NavigationMenuContent>
                     </>
@@ -136,34 +151,55 @@ export default function Navbar() {
       
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white/90 backdrop-blur-md shadow-xl flex flex-col items-center py-4 animate-fade-in z-50">
-          {navigation.map((item) => (
-            <div key={item.name} className="w-full">
-              <Link
-                href={item.href}
-                className="w-full text-center py-3 text-lg font-medium text-[#1A3300] hover:text-white hover:bg-green-600 transition-all duration-200 mx-4 rounded-md flex items-center justify-center gap-2"
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.name}
-                {item.dropdown && <ChevronDown className="h-4 w-4" />}
-              </Link>
-              {/* Mobile Dropdown */}
-              {item.dropdown && (
-                <div className="bg-white/80 mx-4 rounded-md mt-1 overflow-hidden">
-                  {item.dropdown.map((subItem) => (
-                    <Link
-                      key={subItem.name}
-                      href={subItem.href}
-                      className="block py-2 px-4 text-sm text-[#1A3300] hover:bg-green-100 transition-colors duration-200"
-                      onClick={() => setMenuOpen(false)}
+        <div className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-md shadow-xl border-t border-gray-100 z-50">
+          <div className="px-4 py-6 space-y-2">
+            {navigation.map((item) => (
+              <div key={item.name} className="space-y-1">
+                {item.dropdown ? (
+                  <>
+                    <button
+                      className="flex items-center justify-between w-full px-4 py-3 text-base font-medium text-[#143051] hover:text-[#6e7869] hover:bg-gray-50 rounded-lg transition-all duration-200"
+                      onClick={(e) => toggleDropdown(item.name, e)}
                     >
-                      {subItem.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+                      <span>{item.name}</span>
+                      <ChevronDown 
+                        className={`h-4 w-4 transition-transform duration-200 ${
+                          openDropdowns.includes(item.name) ? 'rotate-180' : ''
+                        }`} 
+                      />
+                    </button>
+                    {/* Mobile Dropdown - Conditionally rendered */}
+                    <div 
+                      className={`ml-4 space-y-1 border-l-2 border-gray-100 pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                        openDropdowns.includes(item.name) 
+                          ? 'max-h-96 opacity-100' 
+                          : 'max-h-0 opacity-0'
+                      }`}
+                    >
+                      {item.dropdown.map((subItem) => (
+                        <Link
+                          key={subItem.name}
+                          href={subItem.href}
+                          className="block px-4 py-2 text-sm text-[#143051] hover:text-[#6e7869] hover:bg-gray-50 rounded-md transition-all duration-200"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {subItem.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="flex items-center justify-between w-full px-4 py-3 text-base font-medium text-[#143051] hover:text-[#6e7869] hover:bg-gray-50 rounded-lg transition-all duration-200"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <span>{item.name}</span>
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </nav>
