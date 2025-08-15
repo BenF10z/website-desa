@@ -32,14 +32,19 @@ export default function CTAButton({
 
   return (
     <Link href={href}>
-      <div className={cn(
-        baseClasses,
-        variants[variant],
-        sizes[size],
-        className
-      )}>
+      <div
+        className={cn(
+          baseClasses,
+          variants[variant],
+          sizes[size],
+          "group", // Tambahkan group untuk hover child
+          className
+        )}
+      >
         <span>{children}</span>
-        <ArrowRight className="w-5 h-5" />
+        <ArrowRight
+          className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:scale-110"
+        />
       </div>
     </Link>
   )
