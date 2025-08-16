@@ -26,7 +26,7 @@ export default function HeroSection() {
               </p>
             </div>
             <CTAButton href="/paket-wisata" variant="white" size="large">
-              Explore Tours
+              Jelajahi Lebih Lanjut
             </CTAButton>
           </div>
         </div>
