@@ -17,26 +17,13 @@ const navigation = [
   { name: "BERANDA", href: "/" },
   { 
     name: "PROFIL DESA", 
-    href: "/profil",
+    href: "",
     dropdown: [
       { name: "Sejarah Desa", href: "/profil/sejarah" },
       { name: "Visi & Misi", href: "/profil/visi-misi" },
       { name: "Struktur Organisasi", href: "/profil/struktur" },
-      { name: "Pemerintahan", href: "/profil/pemerintahan" },
     ]
   },
-  // { 
-  //   name: "POTENSI DESA", 
-  //   href: "/potensi-desa",
-  //   dropdown: [
-  //     { name: "Pertanian", href: "/potensi-desa?kategori=pertanian" },
-  //     { name: "Wisata", href: "/potensi-desa?kategori=wisata" },
-  //     { name: "Sumber Daya Alam", href: "/potensi-desa?kategori=sumber_daya" },
-  //     { name: "Industri", href: "/potensi-desa?kategori=industri" },
-  //     { name: "Budaya", href: "/potensi-desa?kategori=budaya" },
-  //     { name: "Ekonomi", href: "/potensi-desa?kategori=ekonomi" },
-  //   ]
-  // },
   { name: "BUMDES", href: "/bumdes" },
   { name: "PAKET WISATA", href: "/paket-wisata" },
   { name: "BERITA DESA", href: "/berita-desa" },
