@@ -13,12 +13,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Users, Leaf, Store, MapPin, LogOut } from "lucide-react";
+import { ImageIcon, Users, Leaf, Store, MapPin, LogOut, Newspaper } from "lucide-react";
 import GalleryForm from "@/components/admin/gallery-form";
 import ProfilForm from "@/components/admin/profil-form";
 import PotensiForm from "@/components/admin/potensi-form";
 import BumdesForm from "@/components/admin/bumdes-form";
 import PaketWisataForm from "@/components/admin/paket-wisata-form";
+import BeritaForm from "@/components/admin/berita-form";
 import { useToast } from "@/hooks/use-toast";
 
 function AdminDashboardContent() {
@@ -31,19 +32,21 @@ function AdminDashboardContent() {
     potensi: 0,
     bumdes: 0,
     wisata: 0,
+    berita: 0,
   });
   const [loading, setLoading] = useState(true);
 
   const fetchCounts = async () => {
     try {
       setLoading(true);
-      const [galleryRes, profilRes, potensiRes, bumdesRes, wisataRes] =
+      const [galleryRes, profilRes, potensiRes, bumdesRes, wisataRes, beritaRes] =
         await Promise.all([
           fetch("/api/gallery").catch(() => ({ ok: false })),
           fetch("/api/profil").catch(() => ({ ok: false })),
           fetch("/api/potensi-desa").catch(() => ({ ok: false })),
           fetch("/api/bumdes").catch(() => ({ ok: false })),
           fetch("/api/paket-wisata").catch(() => ({ ok: false })),
+          fetch("/api/berita").catch(() => ({ ok: false })),
         ]);
 
       const gallery = galleryRes.ok ? await galleryRes.json().catch(() => []) : [];
@@ -51,6 +54,7 @@ function AdminDashboardContent() {
       const potensi = potensiRes.ok ? await potensiRes.json().catch(() => []) : [];
       const bumdes = bumdesRes.ok ? await bumdesRes.json().catch(() => []) : [];
       const wisata = wisataRes.ok ? await wisataRes.json().catch(() => []) : [];
+      const berita = beritaRes.ok ? await beritaRes.json().catch(() => []) : [];
 
       setCounts({
         gallery: Array.isArray(gallery) ? gallery.length : 0,
@@ -58,6 +62,7 @@ function AdminDashboardContent() {
         potensi: Array.isArray(potensi) ? potensi.length : 0,
         bumdes: Array.isArray(bumdes) ? bumdes.length : 0,
         wisata: Array.isArray(wisata) ? wisata.length : 0,
+        berita: Array.isArray(berita) ? berita.length : 0,
       });
     } catch (error) {
       console.error("Error fetching counts:", error);
@@ -122,6 +127,12 @@ function AdminDashboardContent() {
       icon: MapPin,
       color: "bg-red-500",
     },
+    {
+      title: "Berita Desa",
+      value: counts.berita,
+      icon: Newspaper,
+      color: "bg-orange-500",
+    },
   ];
 
   if (loading) {
@@ -176,17 +187,18 @@ function AdminDashboardContent() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:grid-cols-7">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="profil">Profil</TabsTrigger>
             <TabsTrigger value="potensi">Potensi</TabsTrigger>
             <TabsTrigger value="bumdes">Bumdes</TabsTrigger>
             <TabsTrigger value="wisata">Wisata</TabsTrigger>
+            <TabsTrigger value="berita">Berita</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
               {stats.map((stat, index) => (
                 <Card key={index}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -206,15 +218,23 @@ function AdminDashboardContent() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Selamat Datang</CardTitle>
+                <CardTitle>Selamat Datang di Admin Panel</CardTitle>
                 <CardDescription>
                   Dashboard admin untuk mengelola konten website Desa Kenteng
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
-                  Gunakan menu di atas untuk mengelola berbagai konten website seperti gallery, profil desa, potensi desa, unit BUMDes, dan paket wisata.
+                <p className="text-gray-600 mb-4">
+                  Gunakan menu di atas untuk mengelola berbagai konten website seperti:
                 </p>
+                <ul className="list-disc list-inside space-y-1 text-gray-600">
+                  <li><strong>Gallery:</strong> Kelola foto dan gambar desa</li>
+                  <li><strong>Profil:</strong> Informasi profil desa</li>
+                  <li><strong>Potensi:</strong> Potensi desa dan kekayaan lokal</li>
+                  <li><strong>Bumdes:</strong> Unit usaha BUMDes</li>
+                  <li><strong>Wisata:</strong> Paket wisata dan destinasi</li>
+                  <li><strong>Berita:</strong> Berita dan informasi terkini desa</li>
+                </ul>
               </CardContent>
             </Card>
           </TabsContent>
@@ -237,6 +257,10 @@ function AdminDashboardContent() {
 
           <TabsContent value="wisata">
             <PaketWisataForm onChange={fetchCounts} />
+          </TabsContent>
+
+          <TabsContent value="berita">
+            <BeritaForm onChange={fetchCounts} />
           </TabsContent>
         </Tabs>
       </div>
