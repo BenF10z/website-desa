@@ -1,115 +1,137 @@
-import Image from "next/image"
-import NewsCard from "@/components/ui/news-card"
-import FeaturedNewsCard from "@/components/ui/featured-news-card"
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import NewsCard from "@/components/ui/news-card";
+import FeaturedNewsCard from "@/components/ui/featured-news-card";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+interface BeritaItem {
+  id: number;
+  title: string;
+  excerpt: string;
+  content: string;
+  slug: string;
+  featured_image: string;
+  author: string;
+  category: string;
+  is_featured: boolean;
+  status: string;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function BeritaDesa() {
-  // Data berita untuk carousel hero
-  const featuredNewsItems = [
-    {
-      title: "Festival Budaya Desa Kenteng 2025 Sukses Digelar",
-      description: "Masyarakat Desa Kenteng kembali menggelar festival budaya tahunan yang menampilkan berbagai kesenian tradisional dan kuliner khas daerah dengan antusiasme tinggi dari pengunjung.",
-      imageUrl: "/placeholder.svg?height=659&width=1440",
-      slug: "festival-budaya-desa-kenteng-2025"
-    },
-    {
-      title: "Program Pelatihan Digital untuk UMKM Desa", 
-      description: "Desa Kenteng meluncurkan program pelatihan digital marketing untuk pelaku UMKM guna meningkatkan daya saing di era digital dengan dukungan penuh dari pemerintah daerah.",
-      imageUrl: "/placeholder.svg?height=659&width=1440",
-      slug: "program-pelatihan-digital-umkm"
-    },
-    {
-      title: "Panen Raya Padi Organik Semester Kedua",
-      description: "Petani desa merayakan panen raya padi organik dengan hasil yang memuaskan berkat penerapan teknologi pertanian modern dan ramah lingkungan.",
-      imageUrl: "/placeholder.svg?height=659&width=1440", 
-      slug: "panen-raya-padi-organik"
-    },
-    {
-      title: "Gotong Royong Membangun Infrastruktur Desa",
-      description: "Semangat gotong royong masyarakat terpancar dalam pembangunan infrastruktur desa secara swadaya untuk kemajuan bersama.",
-      imageUrl: "/placeholder.svg?height=659&width=1440",
-      slug: "gotong-royong-infrastruktur-desa"
+  const [featuredBerita, setFeaturedBerita] = useState<BeritaItem[]>([]);
+  const [allBerita, setAllBerita] = useState<BeritaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 9;
+  
+  useEffect(() => {
+    async function fetchBerita() {
+      try {
+        setLoading(true);
+        
+        // Fetch featured berita for carousel
+        const featuredRes = await fetch("/api/berita?featured=true");
+        let featuredData = await featuredRes.json();
+        
+        // Fetch all berita for cards
+        const allBeritaRes = await fetch("/api/berita");
+        let allBeritaData = await allBeritaRes.json();
+        
+        setFeaturedBerita(featuredData);
+        setAllBerita(allBeritaData);
+        setTotalPages(Math.ceil(allBeritaData.length / itemsPerPage));
+      } catch (error) {
+        console.error("Error fetching berita:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-  ]
+    
+    fetchBerita();
+  }, []);
+  
+  // Format date for display (e.g., "15/12/2024" format)
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+  };
+  
+  // Get current page items
+  const getCurrentPageItems = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return allBerita.slice(startIndex, endIndex);
+  };
+  
+  // Convert API data to format needed by FeaturedNewsCard
+  const getFeaturedNewsItems = () => {
+    return featuredBerita.map(item => ({
+      title: item.title,
+      description: item.excerpt,
+      imageUrl: item.featured_image || "/placeholder.svg?height=659&width=1440",
+      slug: item.slug
+    }));
+  };
 
-  const newsData = [
-    {
-      title: "Workshop Kerajinan Bambu untuk Ibu-Ibu PKK",
-      readTime: "5 menit",
-      author: "Tim Redaksi",
-      date: "06/12/2024",
-      imageUrl: "/placeholder.svg?height=210&width=364",
-      isEssay: true,
-      slug: "workshop-kerajinan-bambu-pkk"
-    },
-    {
-      title: "Pembangunan Jalan Desa Tahap II Dimulai",
-      description: "Pemerintah desa memulai pembangunan jalan tahap kedua untuk meningkatkan akses transportasi menuju area wisata.",
-      author: "Pemerintah Desa",
-      date: "04/12/2024",
-      imageUrl: "/placeholder.svg?height=210&width=364",
-      slug: "pembangunan-jalan-tahap-ii"
-    },
-    {
-      title: "Launching Website Desa yang Lebih Modern",
-      readTime: "4 menit",
-      author: "Tim IT Desa",
-      date: "02/12/2024",
-      imageUrl: "/placeholder.svg?height=210&width=364",
-      isEssay: true,
-      slug: "launching-website-desa-modern"
-    },
-    {
-      title: "Program Bantuan Bibit Unggul untuk Petani",
-      description: "Desa Kenteng menerima bantuan bibit padi unggul dari pemerintah kabupaten untuk meningkatkan produktivitas pertanian.",
-      author: "Dinas Pertanian",
-      date: "30/11/2024",
-      imageUrl: "/placeholder.svg?height=210&width=364",
-      slug: "program-bantuan-bibit-unggul"
-    },
-    {
-      title: "Pelatihan Kewirausahaan untuk Pemuda Desa",
-      readTime: "7 menit",
-      author: "Karang Taruna", 
-      date: "28/11/2024",
-      imageUrl: "/placeholder.svg?height=210&width=364",
-      isEssay: true,
-      slug: "pelatihan-kewirausahaan-pemuda"
-    },
-    {
-      title: "Sosialisasi Program Kesehatan Desa",
-      description: "Puskesmas setempat mengadakan sosialisasi program kesehatan untuk meningkatkan kesadaran masyarakat akan pentingnya hidup sehat.",
-      author: "Puskesmas Desa",
-      date: "26/11/2024",
-      imageUrl: "/placeholder.svg?height=210&width=364",
-      slug: "sosialisasi-program-kesehatan"
-    },
-    {
-      title: "Lomba Inovasi Desa Tingkat Kabupaten",
-      readTime: "6 menit",
-      author: "Tim Inovasi",
-      date: "24/11/2024",
-      imageUrl: "/placeholder.svg?height=210&width=364",
-      isEssay: true,
-      slug: "lomba-inovasi-desa"
-    },
-    {
-      title: "Wisata Edukasi Pertanian untuk Siswa",
-      description: "Desa Kenteng menjadi tujuan wisata edukasi bagi siswa sekolah untuk belajar tentang pertanian organik dan konservasi lingkungan.",
-      author: "Dinas Pendidikan",
-      date: "22/11/2024",
-      imageUrl: "/placeholder.svg?height=210&width=364",
-      slug: "wisata-edukasi-pertanian"
-    },
-    {
-      title: "Mempertahankan Tradisi di Era Digital",
-      readTime: "8 menit",
-      author: "Budayawan Desa",
-      date: "20/11/2024",
-      imageUrl: "/placeholder.svg?height=210&width=364",
-      isEssay: true,
-      slug: "mempertahankan-tradisi-era-digital"
-    }
-  ]
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        {/* Header Section Skeleton */}
+        <div className="relative w-full h-[276px] z-10 bg-[#7e8e7e]">
+          <div className="absolute inset-0 flex items-center justify-center z-20">
+            <div className="w-1/3 h-12 bg-white/20 rounded-lg animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Featured Article Skeleton */}
+        <div className="w-full h-[400px] md:h-[659px] bg-gray-100 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 animate-shimmer" 
+               style={{ backgroundSize: '1000px 100%', backgroundRepeat: 'no-repeat' }}></div>
+          
+          <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16">
+            <div className="w-3/4 h-8 mb-4 bg-white/30 rounded-lg animate-pulse"></div>
+            <div className="w-1/2 h-6 bg-white/20 rounded-lg animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* News Grid Section Skeleton */}
+        <section className="relative z-0 w-full px-4 md:px-[120px] py-[60px] bg-white">
+          <div className="flex flex-col justify-start items-center gap-12">
+            {/* Title Skeletons */}
+            <div className="flex flex-col justify-center items-center gap-2">
+              <div className="w-32 h-4 bg-gray-200 rounded-lg animate-pulse"></div>
+              <div className="w-64 h-8 bg-gray-200 rounded-lg animate-pulse"></div>
+            </div>
+
+            {/* News Cards Skeleton */}
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array(6).fill(0).map((_, index) => (
+                <div key={index} className="rounded-lg overflow-hidden shadow-sm border border-gray-100">
+                  <div className="w-full h-48 bg-gradient-to-r from-gray-200 to-gray-300 animate-shimmer"
+                       style={{ backgroundSize: '1000px 100%', backgroundRepeat: 'no-repeat' }}></div>
+                  <div className="p-4 space-y-3">
+                    <div className="w-3/4 h-4 bg-gray-200 rounded-lg animate-pulse"></div>
+                    <div className="w-full h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                    <div className="flex justify-between items-center pt-2">
+                      <div className="w-20 h-3 bg-gray-200 rounded-lg animate-pulse"></div>
+                      <div className="w-24 h-3 bg-gray-200 rounded-lg animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -125,10 +147,16 @@ export default function BeritaDesa() {
 
       {/* Featured Article Carousel Section - Isolated */}
       <section className="relative z-0">
-        <FeaturedNewsCard
-          newsItems={featuredNewsItems}
-          autoPlayInterval={6000}
-        />
+        {featuredBerita.length > 0 ? (
+          <FeaturedNewsCard
+            newsItems={getFeaturedNewsItems()}
+            autoPlayInterval={6000}
+          />
+        ) : (
+          <div className="w-full h-[400px] md:h-[659px] flex items-center justify-center bg-gray-100">
+            <p className="text-gray-500 text-xl">Tidak ada berita unggulan</p>
+          </div>
+        )}
       </section>
 
       {/* News Grid Section - Clear separation */}
@@ -144,25 +172,74 @@ export default function BeritaDesa() {
           </div>
 
           <div className="w-full flex flex-col justify-start items-start gap-8">
-            {/* Grid Layout - Responsive */}
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {newsData.map((news, index) => (
-                <NewsCard
-                  key={index}
-                  title={news.title}
-                  description={news.description}
-                  author={news.author}
-                  date={news.date}
-                  imageUrl={news.imageUrl}
-                  readTime={news.readTime}
-                  isEssay={news.isEssay}
-                  slug={news.slug}
-                />
-              ))}
-            </div>
+            {allBerita.length > 0 ? (
+              <>
+                {/* Grid Layout - Responsive */}
+                <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {getCurrentPageItems().map((berita) => (
+                    <NewsCard
+                      key={berita.id}
+                      title={berita.title}
+                      description={berita.excerpt}
+                      author={berita.author}
+                      date={formatDate(berita.published_at)}
+                      imageUrl={berita.featured_image || "/placeholder.svg?height=210&width=364"}
+                      readTime={`${Math.ceil(berita.content.length / 1000)} menit`}
+                      isEssay={berita.category.toLowerCase() === "essay"}
+                      slug={berita.slug}
+                    />
+                  ))}
+                </div>
+                
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="w-full flex justify-center items-center mt-8 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="flex items-center gap-1"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      <span>Sebelumnya</span>
+                    </Button>
+                    
+                    <div className="flex items-center gap-1 mx-2">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className={currentPage === page ? "bg-green-600 hover:bg-green-700" : ""}
+                        >
+                          {page}
+                        </Button>
+                      ))}
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className="flex items-center gap-1"
+                    >
+                      <span>Selanjutnya</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="w-full py-16 text-center">
+                <p className="text-gray-500 text-xl">Belum ada berita yang dipublikasikan</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }
