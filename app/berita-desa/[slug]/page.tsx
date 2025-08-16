@@ -129,10 +129,104 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#6e7869]"></div>
-          <p className="mt-4 text-[#143051] font-['Satoshi']">Memuat artikel...</p>
+      <div className="min-h-screen bg-white">
+        {/* Header with Navigation Skeleton */}
+        <div className="w-full px-4 md:px-[120px] pt-24 pb-8">
+          <div className="w-32 h-6 bg-gray-200 rounded-lg animate-pulse"></div>
+        </div>
+
+        {/* Article Header Skeleton */}
+        <div className="w-full px-4 md:px-[120px] pb-8">
+          <div className="max-w-5xl mx-auto">
+            {/* Category and Reading Time */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-24 h-6 bg-[#6e7869]/20 rounded-full animate-pulse"></div>
+              <div className="w-20 h-6 bg-gray-200 rounded-lg animate-pulse"></div>
+            </div>
+
+            {/* Title */}
+            <div className="w-full h-12 md:h-16 bg-gray-200 rounded-lg animate-pulse mb-4"></div>
+            <div className="w-3/4 h-12 bg-gray-200 rounded-lg animate-pulse mb-6"></div>
+
+            {/* Subtitle */}
+            <div className="w-full h-8 bg-gray-200 rounded-lg animate-pulse mb-6"></div>
+
+            {/* Author and Date */}
+            <div className="flex items-center justify-between border-b border-gray-200 pb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#6e7869]/30 rounded-full animate-pulse"></div>
+                <div>
+                  <div className="w-32 h-5 bg-gray-200 rounded-lg animate-pulse mb-2"></div>
+                  <div className="w-24 h-4 bg-gray-200 rounded-lg animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Featured Image Skeleton */}
+        <div className="w-full px-4 md:px-[120px] pb-12">
+          <div className="max-w-5xl mx-auto">
+            <div className="relative w-full h-[300px] md:h-[500px] rounded-2xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 animate-shimmer"
+                  style={{ backgroundSize: '1000px 100%', backgroundRepeat: 'no-repeat' }}></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Article Content Skeleton */}
+        <div className="w-full px-4 md:px-[120px] pt-[60px] pb-[50px] flex justify-center items-start">
+          <div className="w-full max-w-7xl flex flex-col lg:flex-row justify-start items-start gap-8 lg:gap-20">
+            
+            {/* Share Section Skeleton */}
+            <div className="w-full lg:w-auto flex lg:flex-col justify-center lg:justify-start items-start gap-3 order-2 lg:order-1">
+              <div className="w-28 h-5 bg-gray-200 rounded-lg animate-pulse mb-2 lg:mb-4"></div>
+              <div className="flex lg:flex-col gap-3 lg:gap-4">
+                {[1, 2, 3, 4].map((_, i) => (
+                  <div key={i} className="w-8 h-8 bg-gray-200 rounded-lg animate-pulse"></div>
+                ))}
+              </div>
+            </div>
+
+            {/* Main Content Skeleton */}
+            <div className="flex-1 max-w-[648px] flex flex-col justify-start items-start gap-6 order-1 lg:order-2">
+              {[1, 2, 3, 4, 5].map((_, i) => (
+                <div key={i} className="w-full h-24 bg-gradient-to-r from-gray-200 to-gray-300 animate-shimmer rounded-lg"
+                    style={{ backgroundSize: '1000px 100%', backgroundRepeat: 'no-repeat' }}></div>
+              ))}
+              <div className="w-full flex justify-end">
+                <div className="w-24 h-5 bg-gray-200 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Sidebar Skeleton */}
+            <div className="w-full lg:w-[361px] flex flex-col justify-center items-start gap-12 order-3">
+              <div className="w-full h-32 bg-gray-200 rounded-lg animate-pulse"></div>
+              <div className="w-full h-56 bg-gradient-to-br from-[#6e7869]/20 to-[#4a5a4a]/20 rounded-2xl animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Related News Skeleton */}
+        <div className="w-full px-4 md:px-[120px] pb-[60px]">
+          <div className="w-64 h-10 bg-gray-200 rounded-lg animate-pulse mb-8"></div>
+          
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((_, i) => (
+              <div key={i} className="rounded-lg overflow-hidden shadow-sm border border-gray-100">
+                <div className="w-full h-48 bg-gradient-to-r from-gray-200 to-gray-300 animate-shimmer"
+                    style={{ backgroundSize: '1000px 100%', backgroundRepeat: 'no-repeat' }}></div>
+                <div className="p-4 space-y-3">
+                  <div className="w-3/4 h-4 bg-gray-200 rounded-lg animate-pulse"></div>
+                  <div className="w-full h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                  <div className="flex justify-between items-center pt-2">
+                    <div className="w-20 h-3 bg-gray-200 rounded-lg animate-pulse"></div>
+                    <div className="w-24 h-3 bg-gray-200 rounded-lg animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

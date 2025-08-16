@@ -11,10 +11,14 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
+    // Properly await the entire params object before accessing properties
+    const resolvedParams = await params
+    const slug = resolvedParams.slug
+
     const { data, error } = await supabase
       .from("berita")
       .select("*")
-      .eq("slug", params.slug)
+      .eq("slug", slug)
       .eq("status", "published")
       .single()
 
