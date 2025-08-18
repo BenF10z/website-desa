@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,26 +23,27 @@ interface BeritaItem {
 }
 
 interface NewsDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default function NewsDetailPage({ params }: NewsDetailPageProps) {
+  const resolvedParams = use(params);
   const [newsArticle, setNewsArticle] = useState<BeritaItem | null>(null);
   const [relatedNews, setRelatedNews] = useState<BeritaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (params.slug) {
+    if (resolvedParams.slug) {
       fetchBerita();
     }
-  }, [params.slug]);
+  }, [resolvedParams.slug]);
 
   const fetchBerita = async () => {
     try {
-      const response = await fetch(`/api/berita/slug/${params.slug}`);
+      const response = await fetch(`/api/berita/slug/${resolvedParams.slug}`);
       if (response.ok) {
         const data = await response.json();
         setNewsArticle(data);
@@ -399,10 +400,6 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
                           className="object-cover"
                         />
                       </div>
-                      {/* Caption opsional */}
-                      <p className="text-[#6e7869] text-sm italic text-center">
-                        Gambar {imageIndex + 1}: Dokumentasi kegiatan di Desa Kenteng
-                      </p>
                     </div>
                   );
                   imageIndex++;

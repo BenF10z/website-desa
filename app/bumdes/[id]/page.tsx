@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,26 +24,27 @@ interface BumdesItem {
 }
 
 interface UmkmDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function UmkmDetailPage({ params }: UmkmDetailPageProps) {
+  const resolvedParams = use(params);
   const [umkmDetail, setUmkmDetail] = useState<BumdesItem | null>(null);
   const [relatedUmkm, setRelatedUmkm] = useState<BumdesItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (params.id) {
+    if (resolvedParams.id) {
       fetchUmkmDetail();
     }
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   const fetchUmkmDetail = async () => {
     try {
-      const response = await fetch(`/api/bumdes/${params.id}`);
+      const response = await fetch(`/api/bumdes/${resolvedParams.id}`);
       if (response.ok) {
         const data = await response.json();
         setUmkmDetail(data);
