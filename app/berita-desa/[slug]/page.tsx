@@ -442,7 +442,7 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
             {/* Ringkasan Berita */}
             <div className="w-full flex flex-col justify-center items-center gap-2.5">
               <p className="w-full text-[#143051] text-sm font-normal font-['Inter'] leading-relaxed">
-                {newsArticle.excerpt || newsArticle.content.substring(0, 200) + "..."}
+                {newsArticle.excerpt}
               </p>
             </div>
             
