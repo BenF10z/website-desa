@@ -1,10 +1,11 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, Calendar, Building2 } from "lucide-react";
+import { MapPin, Phone, Calendar } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface UmkmCardProps {
+  id?: number;
   title: string;
   description: string;
   imageUrl: string;
@@ -12,35 +13,43 @@ interface UmkmCardProps {
   location?: string;
   contactNumber?: string;
   establishedYear?: number;
+  showContactButton?: boolean;
+  href?: string;
 }
 
-export default function UmkmCard({ 
-  title, 
-  description, 
-  imageUrl, 
+export default function UmkmCard({
+  id,
+  title,
+  description,
+  imageUrl,
   category,
   location,
   contactNumber,
-  establishedYear
+  establishedYear,
+  showContactButton = true,
+  href
 }: UmkmCardProps) {
-  const handleContactClick = (contactNumber: string) => {
+  const handleContactClick = (e: React.MouseEvent, contactNumber: string) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (contactNumber) {
-      // Format number for WhatsApp
-      const cleanNumber = contactNumber.replace(/\D/g, '');
-      const whatsappNumber = cleanNumber.startsWith('62') ? cleanNumber : `62${cleanNumber.startsWith('0') ? cleanNumber.slice(1) : cleanNumber}`;
-      window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+      const cleanNumber = contactNumber.replace(/\D/g, "");
+      const whatsappNumber = cleanNumber.startsWith("62")
+        ? cleanNumber
+        : `62${cleanNumber.startsWith("0") ? cleanNumber.slice(1) : cleanNumber}`;
+      window.open(`https://wa.me/${whatsappNumber}`, "_blank");
     }
   };
 
-  return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-[#6e7869]/20 hover:border-[#6e7869] bg-white">
-      <CardHeader className="p-0">
-        <div className="relative h-48 w-full rounded-t-lg overflow-hidden">
+  const cardContent = (
+    <article className="w-full flex flex-col justify-center items-start gap-3 overflow-hidden transition-transform duration-300 group-hover:scale-[1.02]">
+      <div className="w-full flex flex-col justify-start items-start gap-4">
+        <div className="w-full h-[210px] relative">
           <Image
             src={imageUrl}
             alt={title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover rounded-2xl transition-all duration-300 group-hover:brightness-110"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {category && (
@@ -51,35 +60,27 @@ export default function UmkmCard({
             </div>
           )}
         </div>
-      </CardHeader>
-      <CardContent className="p-6">
-        <CardTitle className="text-xl font-bold text-[#041b06] font-['Satoshi'] mb-3">
-          {title}
-        </CardTitle>
-        <CardDescription className="text-[#6e7869] font-['Satoshi'] mb-4 line-clamp-3">
-          {description}
-        </CardDescription>
-
-        {/* Details */}
-        <div className="space-y-2 mb-4">
-          {location && (
-            <div className="flex items-center gap-2 text-sm text-[#6e7869]">
-              <MapPin className="h-4 w-4" />
-              <span className="line-clamp-1">{location}</span>
-            </div>
-          )}
-          {establishedYear && (
-            <div className="flex items-center gap-2 text-sm text-[#6e7869]">
-              <Calendar className="h-4 w-4" />
-              <span>Didirikan {establishedYear}</span>
-            </div>
-          )}
+        <div className="w-full flex justify-between items-center">
+          <span className="text-[#3e5880] text-sm font-normal font-['Satoshi'] tracking-tight">
+            {location || "UMKM"}
+          </span>
+          <span className="text-[#3e5880] text-sm font-normal font-['Satoshi'] tracking-tight">
+            {establishedYear ? `Didirikan ${establishedYear}` : ""}
+          </span>
         </div>
-
-        {/* Contact Button */}
-        {contactNumber && (
+      </div>
+      <div className="w-full flex flex-col justify-start items-start gap-4">
+        <h3 className="w-full text-[#143051] text-xl font-bold font-['Satoshi'] tracking-tight transition-colors duration-300 group-hover:text-[#6e7869]">
+          {title}
+        </h3>
+        {description && (
+          <p className="w-full text-[#143051] text-base font-normal font-['Satoshi'] line-clamp-3">
+            {description}
+          </p>
+        )}
+        {showContactButton && contactNumber && (
           <Button
-            onClick={() => handleContactClick(contactNumber)}
+            onClick={(e) => handleContactClick(e, contactNumber)}
             className="w-full bg-[#6e7869] hover:bg-[#5a6456] text-white font-['Satoshi']"
             size="sm"
           >
@@ -87,7 +88,19 @@ export default function UmkmCard({
             Hubungi via WhatsApp
           </Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   );
+
+  // If href is provided or id is available, wrap with Link
+  if (href || id) {
+    return (
+      <Link href={href || `/bumdes/${id}`} className="block group">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  // Otherwise return without Link wrapper
+  return <div className="group">{cardContent}</div>;
 }

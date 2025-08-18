@@ -290,13 +290,6 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
             {newsArticle.title}
           </h1>
 
-          {/* Subtitle/Excerpt */}
-          {newsArticle.excerpt && (
-            <p className="text-[#143051] text-lg md:text-xl font-normal font-['Satoshi'] leading-relaxed mb-6">
-              {newsArticle.excerpt}
-            </p>
-          )}
-
           {/* Author and Date */}
           <div className="flex items-center justify-between border-b border-gray-200 pb-6">
             <div className="flex items-center gap-3">
@@ -372,36 +365,72 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
 
           {/* Main Content */}
           <div className="flex-1 max-w-[648px] flex flex-col justify-start items-start gap-6 order-1 lg:order-2">
-            {newsArticle.content.split('\n\n').map((paragraph, index) => (
-              <div key={index} className="w-full flex flex-col justify-start items-start">
-                <div className="w-full flex justify-start items-start gap-2.5">
-                  <p className="flex-1 text-[#143051] text-base font-normal font-['Inter'] leading-relaxed">
-                    {paragraph.trim()}
-                  </p>
-                </div>
-              </div>
-            ))}
-
-            {/* Additional Images */}
-            {newsArticle.additional_images && newsArticle.additional_images.length > 0 && (
-              <div className="w-full space-y-4">
-                {newsArticle.additional_images.map((imageUrl, index) => (
-                  <div key={index} className="w-full flex flex-col justify-end items-end gap-1">
-                    <div className="relative w-full h-[346px] rounded-lg overflow-hidden">
+            {(() => {
+              const paragraphs = newsArticle.content.split('\n\n');
+              const additionalImages = newsArticle.additional_images || [];
+              const content = [];
+              
+              // Hitung berapa paragraf per gambar
+              const insertImageAfter = Math.ceil(paragraphs.length / (additionalImages.length + 1));
+              
+              let imageIndex = 0;
+              
+              paragraphs.forEach((paragraph, index) => {
+                // Tambahkan paragraf
+                content.push(
+                  <div key={`paragraph-${index}`} className="w-full flex flex-col justify-start items-start">
+                    <div className="w-full flex justify-start items-start gap-2.5">
+                      <p className="flex-1 text-[#143051] text-base font-normal font-['Inter'] leading-relaxed">
+                        {paragraph.trim()}
+                      </p>
+                    </div>
+                  </div>
+                );
+                
+                // Setelah setiap beberapa paragraf, sisipkan gambar
+                if ((index + 1) % insertImageAfter === 0 && imageIndex < additionalImages.length) {
+                  content.push(
+                    <div key={`image-${imageIndex}`} className="w-full flex flex-col justify-center items-center gap-4 my-4">
+                      <div className="relative w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-lg">
+                        <Image
+                          src={additionalImages[imageIndex]}
+                          alt={`${newsArticle.title} - Gambar ${imageIndex + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      {/* Caption opsional */}
+                      <p className="text-[#6e7869] text-sm italic text-center">
+                        Gambar {imageIndex + 1}: Dokumentasi kegiatan di Desa Kenteng
+                      </p>
+                    </div>
+                  );
+                  imageIndex++;
+                }
+              });
+              
+              // Jika masih ada gambar yang belum ditampilkan, tambahkan di akhir
+              while (imageIndex < additionalImages.length) {
+                content.push(
+                  <div key={`remaining-image-${imageIndex}`} className="w-full flex flex-col justify-center items-center gap-4 my-4">
+                    <div className="relative w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-lg">
                       <Image
-                        src={imageUrl}
-                        alt={`${newsArticle.title} - Gambar ${index + 1}`}
+                        src={additionalImages[imageIndex]}
+                        alt={`${newsArticle.title} - Gambar ${imageIndex + 1}`}
                         fill
                         className="object-cover"
                       />
                     </div>
-                    <div className="text-[#3e5880] text-sm font-medium font-['Satoshi']">
-                      Dokumentasi {newsArticle.title} ({index + 1})
-                    </div>
+                    <p className="text-[#6e7869] text-sm italic text-center">
+                      Gambar {imageIndex + 1}: Dokumentasi kegiatan di Desa Kenteng
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
+                );
+                imageIndex++;
+              }
+              
+              return content;
+            })()}
 
             {/* Date */}
             <div className="w-full h-[19px] flex justify-end items-start">
@@ -413,13 +442,10 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
 
           {/* Sidebar */}
           <div className="w-full lg:w-[361px] flex flex-col justify-center items-start gap-12 order-3">
-            {/* Author Bio - Dynamic based on author */}
+            {/* Ringkasan Berita */}
             <div className="w-full flex flex-col justify-center items-center gap-2.5">
               <p className="w-full text-[#143051] text-sm font-normal font-['Inter'] leading-relaxed">
-                {newsArticle.author === "Tim Redaksi Desa" 
-                  ? "Tim Redaksi Desa adalah tim yang terdiri dari para jurnalis lokal dan aktivis komunitas yang berdedikasi untuk mengangkat cerita-cerita inspiratif dari Desa Kenteng. Dengan pengalaman bertahun-tahun di bidang jurnalisme komunitas, tim ini berkomitmen untuk menyajikan informasi yang akurat dan bermanfaat bagi masyarakat."
-                  : `${newsArticle.author} adalah kontributor aktif yang memiliki keahlian khusus di bidang ${newsArticle.category.toLowerCase()} dan pemberdayaan masyarakat desa.`
-                }
+                {newsArticle.excerpt || newsArticle.content.substring(0, 200) + "..."}
               </p>
             </div>
             
