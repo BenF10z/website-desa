@@ -1,198 +1,267 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Edit, Trash2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { Trash2, Edit, Plus, Eye, Calendar, User, Building2, MapPin } from "lucide-react";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface BumdesItem {
-  id: number
-  name: string
-  description: string
-  category: string
-  image_url: string
-  contact_info?: string
-  operating_hours?: string
-  services: string
-  created_at: string
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  contact_person: string;
+  contact_number: string;
+  location: string;
+  image_url: string;
+  image_path: string;
+  is_active: boolean;
+  established_year: number;
+  created_at: string;
+  updated_at: string;
 }
 
-export default function BumdesForm( { onChange }: { onChange?: () => void }) {
-  const [items, setItems] = useState<BumdesItem[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const { toast } = useToast()
+interface BumdesFormProps {
+  onChange?: () => void;
+}
 
+export default function BumdesForm({ onChange }: BumdesFormProps) {
+  const [items, setItems] = useState<BumdesItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [editingItem, setEditingItem] = useState<BumdesItem | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category: "",
+    category: "Perdagangan",
+    contact_person: "",
+    contact_number: "",
+    location: "",
     image_url: "",
-    contact_info: "",
-    operating_hours: "",
-    services: "",
-  })
+    image_path: "",
+    is_active: true,
+    established_year: new Date().getFullYear(),
+  });
+
+  const { toast } = useToast();
 
   const categories = [
-    { value: "perdagangan", label: "Perdagangan" },
-    { value: "jasa", label: "Jasa" },
-    { value: "industri", label: "Industri" },
-    { value: "pariwisata", label: "Pariwisata" },
-    { value: "pertanian", label: "Pertanian" },
-    { value: "keuangan", label: "Keuangan" },
-  ]
+    "Perdagangan",
+    "Jasa",
+    "Produksi",
+    "Pertanian",
+    "Peternakan",
+    "Kerajinan",
+    "Kuliner",
+    "Teknologi",
+    "Pariwisata",
+    "Lainnya"
+  ];
 
   useEffect(() => {
-    fetchBumdesItems()
-  }, [])
+    fetchItems();
+  }, []);
 
-  const fetchBumdesItems = async () => {
+  const fetchItems = async () => {
+    setLoading(true);
     try {
-      const response = await fetch("/api/bumdes")
+      const response = await fetch("/api/bumdes");
       if (response.ok) {
-        const data = await response.json()
-        setItems(data)
+        const data = await response.json();
+        setItems(data);
+      } else {
+        throw new Error("Gagal memuat data BUMDes");
       }
     } catch (error) {
-      console.error("Error fetching bumdes items:", error)
+      console.error("Error fetching BUMDes:", error);
+      toast({
+        title: "Error",
+        description: "Gagal memuat data BUMDes",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const url = editingId ? `/api/bumdes/${editingId}` : "/api/bumdes"
-      const method = editingId ? "PUT" : "POST"
+      // Validate required fields
+      if (!formData.name.trim() || !formData.description.trim()) {
+        throw new Error("Nama dan deskripsi wajib diisi");
+      }
+
+      const dataToSubmit = {
+        ...formData,
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        contact_person: formData.contact_person.trim(),
+        contact_number: formData.contact_number.trim(),
+        location: formData.location.trim(),
+      };
+
+      const url = editingItem ? `/api/bumdes/${editingItem.id}` : "/api/bumdes";
+      const method = editingItem ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSubmit),
+      });
 
       if (response.ok) {
         toast({
           title: "Berhasil!",
-          description: editingId ? "Unit Bumdes berhasil diperbarui" : "Unit Bumdes berhasil ditambahkan",
-        })
-        resetForm()
-        fetchBumdesItems()
-        if (onChange) onChange()
+          description: `Unit UMKM berhasil ${editingItem ? "diperbarui" : "ditambahkan"}`,
+        });
+        resetForm();
+        fetchItems();
+        if (onChange) onChange();
       } else {
-        throw new Error("Failed to save bumdes item")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Gagal menyimpan data UMKM");
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Gagal menyimpan unit Bumdes",
+        description: error instanceof Error ? error.message : "Terjadi kesalahan",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleEdit = (item: BumdesItem) => {
+    setEditingItem(item);
     setFormData({
       name: item.name,
       description: item.description,
       category: item.category,
-      image_url: item.image_url,
-      contact_info: item.contact_info || "",
-      operating_hours: item.operating_hours || "",
-      services: item.services,
-    })
-    setEditingId(item.id)
-  }
+      contact_person: item.contact_person || "",
+      contact_number: item.contact_number || "",
+      location: item.location || "",
+      image_url: item.image_url || "",
+      image_path: item.image_path || "",
+      is_active: item.is_active,
+      established_year: item.established_year || new Date().getFullYear(),
+    });
+    
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus unit Bumdes ini?")) return
+  const handleDelete = async (id: number, name: string) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus unit UMKM "${name}"?`)) {
+      return;
+    }
 
+    setLoading(true);
     try {
       const response = await fetch(`/api/bumdes/${id}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
         toast({
           title: "Berhasil!",
-          description: "Unit Bumdes berhasil dihapus",
-        })
-        fetchBumdesItems();
+          description: "Unit UMKM berhasil dihapus",
+        });
+        fetchItems();
         if (onChange) onChange();
+      } else {
+        throw new Error("Gagal menghapus unit UMKM");
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Gagal menghapus unit Bumdes",
+        description: "Gagal menghapus unit UMKM",
         variant: "destructive",
-      })
+      });
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const resetForm = () => {
+    setEditingItem(null);
     setFormData({
       name: "",
       description: "",
-      category: "",
+      category: "Perdagangan",
+      contact_person: "",
+      contact_number: "",
+      location: "",
       image_url: "",
-      contact_info: "",
-      operating_hours: "",
-      services: "",
-    })
-    setEditingId(null)
-  }
+      image_path: "",
+      is_active: true,
+      established_year: new Date().getFullYear(),
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="space-y-6">
+      {/* Form Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5" />
-            {editingId ? "Edit Unit Bumdes" : "Tambah Unit Bumdes Baru"}
+          <CardTitle className="flex items-center gap-2 text-green-800">
+            {editingItem ? <Edit className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+            {editingItem ? "Edit Unit UMKM" : "Tambah Unit UMKM Baru"}
           </CardTitle>
-          <CardDescription>
-            {editingId ? "Perbarui informasi unit Bumdes" : "Tambahkan unit usaha baru untuk Bumdes"}
-          </CardDescription>
+          {editingItem && (
+            <div className="text-sm text-gray-600">
+              Mengedit unit: <span className="font-medium">{editingItem.name}</span>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Name and Category Row */}
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nama Unit Usaha</Label>
+                <Label htmlFor="name">Nama Unit UMKM *</Label>
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Masukkan nama unit usaha"
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Masukkan nama unit UMKM..."
                   required
+                  disabled={loading}
                 />
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="category">Kategori</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                  disabled={loading}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih kategori" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {cat.label}
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -200,69 +269,118 @@ export default function BumdesForm( { onChange }: { onChange?: () => void }) {
               </div>
             </div>
 
+            {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description">Deskripsi</Label>
+              <Label htmlFor="description">Deskripsi *</Label>
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Masukkan deskripsi unit usaha"
-                rows={3}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Deskripsi unit UMKM, produk/layanan yang ditawarkan..."
+                rows={4}
                 required
+                disabled={loading}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="services">Layanan/Produk</Label>
-              <Textarea
-                id="services"
-                value={formData.services}
-                onChange={(e) => setFormData({ ...formData, services: e.target.value })}
-                placeholder="Masukkan layanan atau produk yang ditawarkan"
-                rows={3}
-                required
-              />
-            </div>
+            {/* Image Upload */}
+            <ImageUpload
+              label="Gambar Unit UMKM"
+              value={formData.image_url}
+              onChange={(url, path) => setFormData(prev => ({ 
+                ...prev, 
+                image_url: url, 
+                image_path: path || "" 
+              }))}
+              placeholder="https://example.com/umkm-image.jpg"
+              folder="umkm"
+            />
 
+            {/* Contact and Location Row */}
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="contact_info">Kontak (Opsional)</Label>
+                <Label htmlFor="contact_person">Penanggung Jawab</Label>
                 <Input
-                  id="contact_info"
-                  value={formData.contact_info}
-                  onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
-                  placeholder="Nomor telepon atau email"
+                  id="contact_person"
+                  value={formData.contact_person}
+                  onChange={(e) => setFormData(prev => ({ ...prev, contact_person: e.target.value }))}
+                  placeholder="Nama penanggung jawab"
+                  disabled={loading}
                 />
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="operating_hours">Jam Operasional (Opsional)</Label>
+                <Label htmlFor="contact_number">Nomor Kontak</Label>
                 <Input
-                  id="operating_hours"
-                  value={formData.operating_hours}
-                  onChange={(e) => setFormData({ ...formData, operating_hours: e.target.value })}
-                  placeholder="Senin-Jumat 08:00-17:00"
+                  id="contact_number"
+                  value={formData.contact_number}
+                  onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))}
+                  placeholder="Nomor telepon/WhatsApp"
+                  disabled={loading}
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="image_url">URL Gambar</Label>
-              <Input
-                id="image_url"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-                required
-              />
+            {/* Location and Year Row */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">Lokasi</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="Alamat lengkap unit UMKM"
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="established_year">Tahun Didirikan</Label>
+                <Input
+                  id="established_year"
+                  type="number"
+                  min="2000"
+                  max={new Date().getFullYear()}
+                  value={formData.established_year}
+                  onChange={(e) => setFormData(prev => ({ ...prev, established_year: parseInt(e.target.value) || new Date().getFullYear() }))}
+                  disabled={loading}
+                />
+              </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button type="submit" disabled={isLoading} className="bg-green-600 hover:bg-green-700">
-                {isLoading ? "Menyimpan..." : editingId ? "Perbarui" : "Tambah"}
+            {/* Active Status Toggle */}
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_active"
+                checked={formData.is_active}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+                disabled={loading}
+              />
+              <Label htmlFor="is_active" className="text-sm">
+                Unit aktif beroperasi
+              </Label>
+              <div className="text-xs text-gray-500">
+                (unit akan ditampilkan di halaman publik)
+              </div>
+            </div>
+
+            {/* Submit Buttons */}
+            <div className="flex gap-2 pt-4 border-t">
+              <Button 
+                type="submit" 
+                disabled={loading} 
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {loading 
+                  ? "Menyimpan..." 
+                  : editingItem 
+                    ? "Perbarui Unit UMKM" 
+                    : "Tambah Unit UMKM"
+                }
               </Button>
-              {editingId && (
-                <Button type="button" variant="outline" onClick={resetForm}>
-                  Batal
+              {editingItem && (
+                <Button type="button" variant="outline" onClick={resetForm} disabled={loading}>
+                  Batal Edit
                 </Button>
               )}
             </div>
@@ -270,43 +388,119 @@ export default function BumdesForm( { onChange }: { onChange?: () => void }) {
         </CardContent>
       </Card>
 
+      {/* List Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Daftar Unit Bumdes</CardTitle>
-          <CardDescription>Kelola semua unit usaha Bumdes</CardDescription>
+          <CardTitle className="flex items-center gap-2 text-green-800">
+            <Eye className="h-5 w-5" />
+            Daftar Unit UMKM ({items.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={item.image_url || "/placeholder.svg"}
-                    alt={item.name}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-medium">{item.name}</h3>
-                      <Badge variant="outline">{categories.find((cat) => cat.value === item.category)?.label}</Badge>
+          {loading && items.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Memuat data unit UMKM...</p>
+            </div>
+          ) : items.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">
+              <div className="mb-4">🏢</div>
+              <h3 className="font-medium mb-2">Belum ada unit UMKM</h3>
+              <p className="text-sm">Tambahkan unit UMKM pertama menggunakan form di atas!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {items.map((item) => (
+                <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex gap-4 flex-1">
+                      {/* Image */}
+                      {item.image_url && (
+                        <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border bg-gray-100">
+                          <img
+                            src={item.image_url}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        {/* Title and badges */}
+                        <div className="flex items-start gap-2 mb-2 flex-wrap">
+                          <h3 className="font-semibold text-green-800 text-lg leading-tight">
+                            {item.name}
+                          </h3>
+                          <div className="flex gap-1 flex-shrink-0">
+                            <Badge variant="outline" className="text-xs">
+                              {item.category}
+                            </Badge>
+                            <Badge variant={item.is_active ? 'default' : 'secondary'} className="text-xs">
+                              {item.is_active ? 'Aktif' : 'Tidak Aktif'}
+                            </Badge>
+                          </div>
+                        </div>
+                        
+                        {/* Description */}
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {item.description}
+                        </p>
+                        
+                        {/* Meta info */}
+                        <div className="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+                          {item.contact_person && (
+                            <div className="flex items-center gap-1">
+                              <User className="h-3 w-3" />
+                              {item.contact_person}
+                            </div>
+                          )}
+                          {item.location && (
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {item.location}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1">
+                            <Building2 className="h-3 w-3" />
+                            Didirikan {item.established_year}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {formatDate(item.created_at)}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600 line-clamp-2">{item.description}</p>
-                    {item.contact_info && <p className="text-xs text-green-600 mt-1">📞 {item.contact_info}</p>}
+                    
+                    {/* Action buttons */}
+                    <div className="flex gap-2 flex-shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(item)}
+                        disabled={loading}
+                        className="hover:bg-green-50"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(item.id, item.name)}
+                        disabled={loading}
+                        className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => handleEdit(item)}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleDelete(item.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -54,7 +54,7 @@ export default function Bumdes() {
       <BumdesProfileSection />
 
       {/* UMKM Section */}
-      <UmkmSection />
+      <UmkmSection maxItems={0} showViewAll={false} />
     </div>
   )
 }
