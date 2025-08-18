@@ -15,6 +15,8 @@ interface BumdesItem {
   contact_number: string;
   location: string;
   image_url: string;
+  additional_images: string[];
+  additional_image_paths: string[];
   is_active: boolean;
   established_year: number;
   created_at: string;

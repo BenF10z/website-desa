@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, Edit, Plus, Eye, Calendar, User, Building2, MapPin } from "lucide-react";
+import { Trash2, Edit, Plus, Eye, Calendar, User, Building2, MapPin, Images } from "lucide-react";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { MultipleImageUpload } from "@/components/ui/multiple-image-upload";
 
 interface BumdesItem {
   id: number;
@@ -23,6 +24,8 @@ interface BumdesItem {
   location: string;
   image_url: string;
   image_path: string;
+  additional_images: string[];
+  additional_image_paths: string[];
   is_active: boolean;
   established_year: number;
   created_at: string;
@@ -46,6 +49,8 @@ export default function BumdesForm({ onChange }: BumdesFormProps) {
     location: "",
     image_url: "",
     image_path: "",
+    additional_images: [] as string[],
+    additional_image_paths: [] as string[],
     is_active: true,
     established_year: new Date().getFullYear(),
   });
@@ -153,6 +158,8 @@ export default function BumdesForm({ onChange }: BumdesFormProps) {
       location: item.location || "",
       image_url: item.image_url || "",
       image_path: item.image_path || "",
+      additional_images: item.additional_images || [],
+      additional_image_paths: item.additional_image_paths || [],
       is_active: item.is_active,
       established_year: item.established_year || new Date().getFullYear(),
     });
@@ -204,6 +211,8 @@ export default function BumdesForm({ onChange }: BumdesFormProps) {
       location: "",
       image_url: "",
       image_path: "",
+      additional_images: [],
+      additional_image_paths: [],
       is_active: true,
       established_year: new Date().getFullYear(),
     });
@@ -283,9 +292,9 @@ export default function BumdesForm({ onChange }: BumdesFormProps) {
               />
             </div>
 
-            {/* Image Upload */}
+            {/* Featured Image Upload */}
             <ImageUpload
-              label="Gambar Unit UMKM"
+              label="Gambar Utama Unit UMKM"
               value={formData.image_url}
               onChange={(url, path) => setFormData(prev => ({ 
                 ...prev, 
@@ -294,6 +303,20 @@ export default function BumdesForm({ onChange }: BumdesFormProps) {
               }))}
               placeholder="https://example.com/umkm-image.jpg"
               folder="umkm"
+            />
+
+            {/* Additional Images Upload */}
+            <MultipleImageUpload
+              label="Gambar Tambahan Unit UMKM"
+              images={formData.additional_images}
+              imagePaths={formData.additional_image_paths}
+              onChange={(images, paths) => setFormData(prev => ({
+                ...prev,
+                additional_images: images,
+                additional_image_paths: paths
+              }))}
+              maxImages={5}
+              folder="umkm-gallery"
             />
 
             {/* Contact and Location Row */}
@@ -414,7 +437,7 @@ export default function BumdesForm({ onChange }: BumdesFormProps) {
                 <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex gap-4 flex-1">
-                      {/* Image */}
+                      {/* Featured Image */}
                       {item.image_url && (
                         <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border bg-gray-100">
                           <img
@@ -439,6 +462,12 @@ export default function BumdesForm({ onChange }: BumdesFormProps) {
                             <Badge variant={item.is_active ? 'default' : 'secondary'} className="text-xs">
                               {item.is_active ? 'Aktif' : 'Tidak Aktif'}
                             </Badge>
+                            {item.additional_images && item.additional_images.length > 0 && (
+                              <Badge variant="secondary" className="text-xs">
+                                <Images className="h-3 w-3 mr-1" />
+                                +{item.additional_images.length}
+                              </Badge>
+                            )}
                           </div>
                         </div>
                         

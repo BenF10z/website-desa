@@ -47,6 +47,8 @@ export async function PUT(
       location,
       image_url,
       image_path,
+      additional_images,
+      additional_image_paths,
       is_active,
       established_year
     } = body
@@ -62,6 +64,8 @@ export async function PUT(
         location,
         image_url,
         image_path,
+        additional_images: additional_images || [], // Update as array
+        additional_image_paths: additional_image_paths || [], // Update as array
         is_active,
         established_year,
         updated_at: new Date().toISOString(),
@@ -89,7 +93,7 @@ export async function DELETE(
     // Get the unit data to delete associated images
     const { data: unitData } = await supabase
       .from("bumdes")
-      .select("image_path")
+      .select("image_path, additional_image_paths")
       .eq("id", id)
       .single()
 
@@ -104,11 +108,21 @@ export async function DELETE(
     }
 
     // Delete associated image from storage
+    const imagesToDelete: string[] = []
+    
     if (unitData?.image_path) {
+      imagesToDelete.push(unitData.image_path)
+    }
+    
+    if (unitData?.additional_image_paths && Array.isArray(unitData.additional_image_paths)) {
+      imagesToDelete.push(...unitData.additional_image_paths)
+    }
+
+    if (imagesToDelete.length > 0) {
       try {
-        await supabase.storage.from("images").remove([unitData.image_path])
+        await supabase.storage.from("images").remove(imagesToDelete)
       } catch (storageError) {
-        console.error("Error deleting image from storage:", storageError)
+        console.error("Error deleting images from storage:", storageError)
       }
     }
 

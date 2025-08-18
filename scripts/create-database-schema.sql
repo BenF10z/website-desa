@@ -32,17 +32,27 @@ CREATE TABLE IF NOT EXISTS potensi_desa (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create Bumdes table
+-- Update BUMDes table to include additional_images column
+ALTER TABLE bumdes ADD COLUMN IF NOT EXISTS additional_images TEXT[];
+ALTER TABLE bumdes ADD COLUMN IF NOT EXISTS additional_image_paths TEXT[];
+
+-- Or if creating fresh table:
 CREATE TABLE IF NOT EXISTS bumdes (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
   description TEXT NOT NULL,
-  category VARCHAR(50) NOT NULL,
-  image_url TEXT NOT NULL,
-  contact_info VARCHAR(255),
-  operating_hours VARCHAR(255),
-  services TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  category TEXT DEFAULT 'Perdagangan',
+  contact_person TEXT,
+  contact_number TEXT,
+  location TEXT,
+  image_url TEXT,
+  image_path TEXT,
+  additional_images TEXT[], -- Array of additional image URLs
+  additional_image_paths TEXT[], -- Array of additional image paths for deletion
+  is_active BOOLEAN DEFAULT true,
+  established_year INTEGER DEFAULT EXTRACT(year FROM NOW()),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Create Paket Wisata table

@@ -35,6 +35,8 @@ export async function POST(request: NextRequest) {
       location,
       image_url,
       image_path,
+      additional_images, // New field
+      additional_image_paths, // New field
       is_active,
       established_year
     } = body
@@ -59,6 +61,8 @@ export async function POST(request: NextRequest) {
           location,
           image_url,
           image_path,
+          additional_images: additional_images || [], // Store as array
+          additional_image_paths: additional_image_paths || [], // Store as array
           is_active: is_active !== undefined ? is_active : true,
           established_year: established_year || new Date().getFullYear(),
           created_at: new Date().toISOString(),
