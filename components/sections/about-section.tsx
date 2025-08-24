@@ -38,7 +38,7 @@ export default function AboutSection() {
                 Di sinilah para pelancong menjadi tamu, tamu menjadi sahabat, dan sahabat akan selalu kembali lagi dan lagi.
                 </div>
               <div className="w-full lg:max-w-[491px]">
-                <CTAButton href="/profil" variant="primary" size="default">
+                <CTAButton href="/profil/sejarah" variant="primary" size="default">
                   Lihat Selengkapnya
                 </CTAButton>
               </div>
