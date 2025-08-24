@@ -1,334 +1,539 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Trash2,
+  Edit,
+  Plus,
+  Eye,
+  MapPin,
+  Clock,
+  Users,
+  Phone,
+  DollarSign,
+  Images,
+} from "lucide-react";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { MultipleImageUpload } from "@/components/ui/multiple-image-upload";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Edit, Trash2, X } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-
-interface PaketWisata {
-  id: number
-  title: string
-  description: string
-  price: string
-  duration: string
-  capacity: string
-  rating: number
-  image_url: string
-  highlights: string[]
-  includes: string[]
-  created_at: string
+interface PaketWisataItem {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  duration: string;
+  location: string;
+  image_url: string;
+  image_path: string;
+  additional_images: string[];
+  additional_image_paths: string[];
+  facilities: string[];
+  itinerary: Record<string, any>;
+  min_participants: number;
+  max_participants: number;
+  contact_person: string;
+  contact_number: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
-export default function PaketWisataForm({ onChange }: { onChange?: () => void }) {
-  const [items, setItems] = useState<PaketWisata[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const { toast } = useToast()
+interface PaketWisataFormProps {
+  onChange?: () => void;
+}
 
+export default function PaketWisataForm({ onChange }: PaketWisataFormProps) {
+  const [items, setItems] = useState<PaketWisataItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [editingItem, setEditingItem] = useState<PaketWisataItem | null>(null);
   const [formData, setFormData] = useState({
-    title: "",
+    name: "",
     description: "",
-    price: "",
+    price: 0,
     duration: "",
-    capacity: "",
-    rating: 5,
+    location: "",
     image_url: "",
-    highlights: [""],
-    includes: [""],
-  })
+    image_path: "",
+    additional_images: [] as string[],
+    additional_image_paths: [] as string[],
+    facilities: [] as string[],
+    min_participants: 1,
+    max_participants: 50,
+    contact_person: "",
+    contact_number: "",
+    is_active: true,
+  });
+  const [facilitiesInput, setFacilitiesInput] = useState("");
+
+  const { toast } = useToast();
 
   useEffect(() => {
-    fetchPaketWisata()
-  }, [])
+    fetchItems();
+  }, []);
 
-  const fetchPaketWisata = async () => {
+  const fetchItems = async () => {
+    setLoading(true);
     try {
-      const response = await fetch("/api/paket-wisata")
+      const response = await fetch("/api/paket-wisata");
       if (response.ok) {
-        const data = await response.json()
-        setItems(data)
+        const data = await response.json();
+        setItems(data);
+      } else {
+        throw new Error("Gagal memuat data paket wisata");
       }
     } catch (error) {
-      console.error("Error fetching paket wisata:", error)
+      console.error("Error fetching paket wisata:", error);
+      toast({
+        title: "Error",
+        description: "Gagal memuat data paket wisata",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const url = editingId ? `/api/paket-wisata/${editingId}` : "/api/paket-wisata"
-      const method = editingId ? "PUT" : "POST"
+      // Validate required fields
+      if (!formData.name.trim() || !formData.price) {
+        throw new Error("Nama paket dan harga wajib diisi");
+      }
+
+      // Parse facilities from comma-separated string
+      const facilities = facilitiesInput
+        .split(",")
+        .map((f) => f.trim())
+        .filter((f) => f.length > 0);
+
+      const dataToSubmit = {
+        ...formData,
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        location: formData.location.trim(),
+        contact_person: formData.contact_person.trim(),
+        facilities,
+      };
+
+      const url = editingItem
+        ? `/api/paket-wisata/${editingItem.id}`
+        : "/api/paket-wisata";
+      const method = editingItem ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          highlights: formData.highlights.filter((h) => h.trim() !== ""),
-          includes: formData.includes.filter((i) => i.trim() !== ""),
-        }),
-      })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSubmit),
+      });
 
       if (response.ok) {
-        fetchPaketWisata();
+        toast({
+          title: "Berhasil!",
+          description: `Paket wisata berhasil ${
+            editingItem ? "diperbarui" : "ditambahkan"
+          }`,
+        });
+        resetForm();
+        fetchItems();
         if (onChange) onChange();
       } else {
-        throw new Error("Failed to save paket wisata")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Gagal menyimpan data paket wisata");
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Gagal menyimpan paket wisata",
+        description:
+          error instanceof Error ? error.message : "Terjadi kesalahan",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleEdit = (item: PaketWisata) => {
+  const handleEdit = (item: PaketWisataItem) => {
+    setEditingItem(item);
     setFormData({
-      title: item.title,
-      description: item.description,
+      name: item.name,
+      description: item.description || "",
       price: item.price,
-      duration: item.duration,
-      capacity: item.capacity,
-      rating: item.rating,
-      image_url: item.image_url,
-      highlights: item.highlights.length > 0 ? item.highlights : [""],
-      includes: item.includes.length > 0 ? item.includes : [""],
-    })
-    setEditingId(item.id)
-  }
+      duration: item.duration || "",
+      location: item.location || "",
+      image_url: item.image_url || "",
+      image_path: item.image_path || "",
+      additional_images: item.additional_images || [],
+      additional_image_paths: item.additional_image_paths || [],
+      facilities: item.facilities || [],
+      min_participants: item.min_participants || 1,
+      max_participants: item.max_participants || 50,
+      contact_person: item.contact_person || "",
+      contact_number: item.contact_number || "",
+      is_active: item.is_active !== false,
+    });
+    setFacilitiesInput((item.facilities || []).join(", "));
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus paket wisata ini?")) return
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
+  const handleDelete = async (id: number, name: string) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus paket "${name}"?`)) {
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await fetch(`/api/paket-wisata/${id}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
         toast({
           title: "Berhasil!",
           description: "Paket wisata berhasil dihapus",
-        })
-        fetchPaketWisata();
+        });
+        fetchItems();
         if (onChange) onChange();
+      } else {
+        throw new Error("Gagal menghapus paket wisata");
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Gagal menghapus paket wisata",
         variant: "destructive",
-      })
+      });
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const resetForm = () => {
+    setEditingItem(null);
     setFormData({
-      title: "",
+      name: "",
       description: "",
-      price: "",
+      price: 0,
       duration: "",
-      capacity: "",
-      rating: 5,
+      location: "",
       image_url: "",
-      highlights: [""],
-      includes: [""],
-    })
-    setEditingId(null)
-  }
+      image_path: "",
+      additional_images: [],
+      additional_image_paths: [],
+      facilities: [],
+      min_participants: 1,
+      max_participants: 50,
+      contact_person: "",
+      contact_number: "",
+      is_active: true,
+    });
+    setFacilitiesInput("");
+  };
 
-  const addHighlight = () => {
-    setFormData({ ...formData, highlights: [...formData.highlights, ""] })
-  }
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
 
-  const removeHighlight = (index: number) => {
-    const newHighlights = formData.highlights.filter((_, i) => i !== index)
-    setFormData({ ...formData, highlights: newHighlights })
-  }
-
-  const updateHighlight = (index: number, value: string) => {
-    const newHighlights = [...formData.highlights]
-    newHighlights[index] = value
-    setFormData({ ...formData, highlights: newHighlights })
-  }
-
-  const addInclude = () => {
-    setFormData({ ...formData, includes: [...formData.includes, ""] })
-  }
-
-  const removeInclude = (index: number) => {
-    const newIncludes = formData.includes.filter((_, i) => i !== index)
-    setFormData({ ...formData, includes: newIncludes })
-  }
-
-  const updateInclude = (index: number, value: string) => {
-    const newIncludes = [...formData.includes]
-    newIncludes[index] = value
-    setFormData({ ...formData, includes: newIncludes })
-  }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="space-y-6">
+      {/* Form Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5" />
-            {editingId ? "Edit Paket Wisata" : "Tambah Paket Wisata Baru"}
+          <CardTitle className="flex items-center gap-2 text-purple-800">
+            {editingItem ? (
+              <Edit className="h-5 w-5" />
+            ) : (
+              <Plus className="h-5 w-5" />
+            )}
+            {editingItem ? "Edit Paket Wisata" : "Tambah Paket Wisata Baru"}
           </CardTitle>
-          <CardDescription>
-            {editingId ? "Perbarui informasi paket wisata" : "Tambahkan paket wisata baru untuk pengunjung"}
-          </CardDescription>
+          {editingItem && (
+            <div className="text-sm text-gray-600">
+              Mengedit paket:{" "}
+              <span className="font-medium">{editingItem.name}</span>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Info */}
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Nama Paket</Label>
+                <Label htmlFor="name">Nama Paket *</Label>
                 <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="Masukkan nama paket wisata"
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  placeholder="Masukkan nama paket wisata..."
                   required
+                  disabled={loading}
                 />
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="price">Harga</Label>
+                <Label htmlFor="price">Harga (Rp) *</Label>
                 <Input
                   id="price"
+                  type="number"
+                  min="0"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  placeholder="Rp 150.000"
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      price: parseFloat(e.target.value) || 0,
+                    }))
+                  }
+                  placeholder="0"
                   required
+                  disabled={loading}
                 />
+                {formData.price > 0 && (
+                  <div className="text-sm text-gray-600">
+                    {formatCurrency(formData.price)}
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4">
+            {/* Duration and Location */}
+            <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="duration">Durasi</Label>
                 <Input
                   id="duration"
                   value={formData.duration}
-                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                  placeholder="8 jam"
-                  required
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      duration: e.target.value,
+                    }))
+                  }
+                  placeholder="Contoh: 2 hari 1 malam"
+                  disabled={loading}
                 />
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="capacity">Kapasitas</Label>
+                <Label htmlFor="location">Lokasi</Label>
                 <Input
-                  id="capacity"
-                  value={formData.capacity}
-                  onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                  placeholder="2-15 orang"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="rating">Rating</Label>
-                <Input
-                  id="rating"
-                  type="number"
-                  min="1"
-                  max="5"
-                  step="0.1"
-                  value={formData.rating}
-                  onChange={(e) => setFormData({ ...formData, rating: Number.parseFloat(e.target.value) })}
-                  required
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: e.target.value,
+                    }))
+                  }
+                  placeholder="Lokasi wisata"
+                  disabled={loading}
                 />
               </div>
             </div>
 
+            {/* Participants */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="min_participants">Minimum Peserta</Label>
+                <Input
+                  id="min_participants"
+                  type="number"
+                  min="1"
+                  value={formData.min_participants}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      min_participants: parseInt(e.target.value) || 1,
+                    }))
+                  }
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="max_participants">Maximum Peserta</Label>
+                <Input
+                  id="max_participants"
+                  type="number"
+                  min="1"
+                  value={formData.max_participants}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      max_participants: parseInt(e.target.value) || 50,
+                    }))
+                  }
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="contact_person">Penanggung Jawab</Label>
+                <Input
+                  id="contact_person"
+                  value={formData.contact_person}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      contact_person: e.target.value,
+                    }))
+                  }
+                  placeholder="Nama penanggung jawab"
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="contact_number">Nomor Kontak</Label>
+                <Input
+                  id="contact_number"
+                  value={formData.contact_number}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      contact_number: e.target.value,
+                    }))
+                  }
+                  placeholder="08xxxxxxxxxx"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Deskripsi</Label>
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Masukkan deskripsi paket wisata"
-                rows={3}
-                required
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                placeholder="Deskripsi paket wisata..."
+                rows={4}
+                disabled={loading}
               />
             </div>
 
+            {/* Facilities */}
             <div className="space-y-2">
-              <Label htmlFor="image_url">URL Gambar</Label>
+              <Label htmlFor="facilities">
+                Fasilitas (pisahkan dengan koma)
+              </Label>
               <Input
-                id="image_url"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-                required
+                id="facilities"
+                value={facilitiesInput}
+                onChange={(e) => setFacilitiesInput(e.target.value)}
+                placeholder="Contoh: Transport, Makan 3x, Penginapan, Guide"
+                disabled={loading}
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Highlight Paket</Label>
-              {formData.highlights.map((highlight, index) => (
-                <div key={index} className="flex gap-2">
-                  <Input
-                    value={highlight}
-                    onChange={(e) => updateHighlight(index, e.target.value)}
-                    placeholder="Masukkan highlight"
-                  />
-                  {formData.highlights.length > 1 && (
-                    <Button type="button" variant="outline" size="sm" onClick={() => removeHighlight(index)}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
+              {facilitiesInput && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {facilitiesInput.split(",").map((facility, index) => (
+                    <Badge key={index} variant="secondary" className="text-xs">
+                      {facility.trim()}
+                    </Badge>
+                  ))}
                 </div>
-              ))}
-              <Button type="button" variant="outline" size="sm" onClick={addHighlight}>
-                <Plus className="h-4 w-4 mr-2" />
-                Tambah Highlight
-              </Button>
+              )}
             </div>
 
-            <div className="space-y-2">
-              <Label>Yang Termasuk</Label>
-              {formData.includes.map((include, index) => (
-                <div key={index} className="flex gap-2">
-                  <Input
-                    value={include}
-                    onChange={(e) => updateInclude(index, e.target.value)}
-                    placeholder="Masukkan yang termasuk"
-                  />
-                  {formData.includes.length > 1 && (
-                    <Button type="button" variant="outline" size="sm" onClick={() => removeInclude(index)}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button type="button" variant="outline" size="sm" onClick={addInclude}>
-                <Plus className="h-4 w-4 mr-2" />
-                Tambah Item
-              </Button>
+            {/* Main Image Upload */}
+            <ImageUpload
+              label="Gambar Utama"
+              value={formData.image_url}
+              onChange={(url, path) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  image_url: url,
+                  image_path: path || "",
+                }))
+              }
+              placeholder="https://example.com/wisata.jpg"
+              folder="paket-wisata"
+            />
+
+            {/* Additional Images Upload */}
+            <MultipleImageUpload
+              label="Gambar Tambahan"
+              images={formData.additional_images}
+              imagePaths={formData.additional_image_paths}
+              onChange={(urls, paths) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  additional_images: urls,
+                  additional_image_paths: paths || [],
+                }))
+              }
+              folder="paket-wisata"
+              maxImages={5}
+            />
+
+            {/* Active Status */}
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_active"
+                checked={formData.is_active}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, is_active: checked }))
+                }
+                disabled={loading}
+              />
+              <Label htmlFor="is_active">Paket Aktif</Label>
             </div>
 
-            <div className="flex gap-2">
-              <Button type="submit" disabled={isLoading} className="bg-green-600 hover:bg-green-700">
-                {isLoading ? "Menyimpan..." : editingId ? "Perbarui" : "Tambah"}
+            {/* Submit Buttons */}
+            <div className="flex gap-2 pt-4 border-t">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {loading
+                  ? "Menyimpan..."
+                  : editingItem
+                  ? "Perbarui Paket Wisata"
+                  : "Tambah Paket Wisata"}
               </Button>
-              {editingId && (
-                <Button type="button" variant="outline" onClick={resetForm}>
-                  Batal
+              {editingItem && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={resetForm}
+                  disabled={loading}
+                >
+                  Batal Edit
                 </Button>
               )}
             </div>
@@ -336,44 +541,169 @@ export default function PaketWisataForm({ onChange }: { onChange?: () => void })
         </CardContent>
       </Card>
 
+      {/* List Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Daftar Paket Wisata</CardTitle>
-          <CardDescription>Kelola semua paket wisata</CardDescription>
+          <CardTitle className="flex items-center gap-2 text-purple-800">
+            <Eye className="h-5 w-5" />
+            Daftar Paket Wisata ({items.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={item.image_url || "/placeholder.svg"}
-                    alt={item.title}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div>
-                    <h3 className="font-medium">{item.title}</h3>
-                    <p className="text-sm text-gray-600">{item.description}</p>
-                    <div className="flex gap-2 mt-1">
-                      <Badge variant="outline">{item.price}</Badge>
-                      <Badge variant="outline">{item.duration}</Badge>
-                      <Badge variant="outline">★ {item.rating}</Badge>
+          {loading && items.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Memuat data paket wisata...</p>
+            </div>
+          ) : items.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">
+              <div className="mb-4">🏖️</div>
+              <h3 className="font-medium mb-2">Belum ada paket wisata</h3>
+              <p className="text-sm">
+                Tambahkan paket wisata pertama menggunakan form di atas!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                >
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex gap-4 flex-1">
+                      {/* Image */}
+                      {item.image_url ? (
+                        <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border bg-gray-100">
+                          <img
+                            src={item.image_url}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex-shrink-0 w-24 h-24 rounded-lg bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                          <Images className="h-8 w-8 text-purple-400" />
+                        </div>
+                      )}
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        {/* Title and badges */}
+                        <div className="flex items-start gap-2 mb-2 flex-wrap">
+                          <h3 className="font-semibold text-purple-800 text-lg leading-tight">
+                            {item.name}
+                          </h3>
+                          <div className="flex gap-1 flex-shrink-0">
+                            <Badge
+                              className="bg-green-100 text-green-800"
+                              variant="outline"
+                            >
+                              {formatCurrency(item.price)}
+                            </Badge>
+                            {!item.is_active && (
+                              <Badge variant="destructive" className="text-xs">
+                                Tidak Aktif
+                              </Badge>
+                            )}
+                            {item.additional_images &&
+                              item.additional_images.length > 0 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  <Images className="h-3 w-3 mr-1" />+
+                                  {item.additional_images.length}
+                                </Badge>
+                              )}
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        {item.description && (
+                          <p
+                            className="text-gray-600 text-sm mb-3 overflow-hidden"
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                            }}
+                          >
+                            {item.description}
+                          </p>
+                        )}
+
+                        {/* Meta info */}
+                        <div className="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+                          {item.duration && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {item.duration}
+                            </div>
+                          )}
+                          {item.location && (
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {item.location}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            {item.min_participants}-{item.max_participants}{" "}
+                            orang
+                          </div>
+                          <div>Dibuat {formatDate(item.created_at)}</div>
+                        </div>
+
+                        {/* Facilities */}
+                        {item.facilities && item.facilities.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {item.facilities
+                              .slice(0, 3)
+                              .map((facility, index) => (
+                                <Badge
+                                  key={index}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {facility}
+                                </Badge>
+                              ))}
+                            {item.facilities.length > 3 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{item.facilities.length - 3} lagi
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex gap-2 flex-shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(item)}
+                        disabled={loading}
+                        className="hover:bg-purple-50"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(item.id, item.name)}
+                        disabled={loading}
+                        className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => handleEdit(item)}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleDelete(item.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -19,6 +19,7 @@ interface MultipleImageUploadProps {
   imagePaths: string[];
   onChange: (images: string[], paths: string[]) => void;
   maxImages?: number;
+  folder?: string;
 }
 
 export function MultipleImageUpload({ 
