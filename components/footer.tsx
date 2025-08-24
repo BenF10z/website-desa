@@ -26,7 +26,7 @@ export default function Footer() {
             {/* Logo and Description */}
             <div className="flex flex-col gap-6 lg:max-w-[400px]">
               <div className="text-white text-2xl md:text-3xl font-bold font-sans">
-                Kenteng Village
+                Desa Kenteng
               </div>
               <p className="text-gray-100 text-sm md:text-base leading-relaxed">
                 Desa wisata yang menawarkan pengalaman autentik di dataran tinggi Jawa Tengah.
@@ -48,23 +48,33 @@ export default function Footer() {
                   >
                     Beranda
                   </Link>
+                  <Link href="/apbdes"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    APBDes
+                  </Link>
                   <Link
                     href="/profil"
                     className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
                   >
                     Profil Desa
                   </Link>
-                  <Link
+                  {/* <Link
                     href="/potensi-desa"
                     className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
                   >
                     Potensi Desa
-                  </Link>
+                  </Link> */}
                   <Link
                     href="/bumdes"
                     className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
                   >
                     BUMDes
+                  </Link>
+                  <Link href="/berita-desa"
+                    className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
+                  >
+                    Berita Desa
                   </Link>
                 </div>
               </div>
@@ -81,24 +91,24 @@ export default function Footer() {
                   >
                     Paket Wisata
                   </Link>
-                  <Link
+                  {/* <Link
                     href="/gallery"
                     className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
                   >
                     Galeri
-                  </Link>
-                  <Link
+                  </Link> */}
+                  {/* <Link
                     href="#"
                     className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
                   >
                     Homestay
-                  </Link>
-                  <Link
+                  </Link> */}
+                  {/* <Link
                     href="#"
                     className="text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200"
                   >
                     Booking Online
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
 

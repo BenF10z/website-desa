@@ -1,7 +1,118 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import CTAButton from "@/components/ui/cta-button"
 
+interface BeritaItem {
+  id: number;
+  title: string;
+  excerpt: string;
+  content: string;
+  slug: string;
+  featured_image: string;
+  author: string;
+  category: string;
+  is_featured: boolean;
+  published_at: string;
+}
+
 export default function NewsSection() {
+  const [featuredNews, setFeaturedNews] = useState<BeritaItem | null>(null)
+  const [sideNews, setSideNews] = useState<BeritaItem[]>([])
+  const [gridNews, setGridNews] = useState<BeritaItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchNewsData()
+  }, [])
+
+  const fetchNewsData = async () => {
+    try {
+      setLoading(true)
+      
+      // Fetch featured news (1 artikel unggulan untuk featured section)
+      const featuredResponse = await fetch("/api/berita?featured=true&limit=1")
+      const featuredData = await featuredResponse.json()
+      
+      // Fetch recent news (untuk side articles dan grid)
+      const recentResponse = await fetch("/api/berita?limit=9")
+      const recentData = await recentResponse.json()
+      
+      // Set featured news
+      setFeaturedNews(featuredData[0] || null)
+      
+      // Set side news (3 artikel terbaru setelah featured)
+      const nonFeaturedNews = recentData.filter((item: BeritaItem) => 
+        !item.is_featured || item.id !== featuredData[0]?.id
+      )
+      setSideNews(nonFeaturedNews.slice(0, 3))
+      
+      // Set grid news (6 artikel untuk bottom grid)
+      setGridNews(nonFeaturedNews.slice(3, 9))
+      
+    } catch (error) {
+      console.error("Error fetching news data:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+  }
+
+  const calculateReadTime = (content: string) => {
+    const wordsPerMinute = 200
+    const words = content.split(' ').length
+    const minutes = Math.ceil(words / wordsPerMinute)
+    return `${minutes} menit baca`
+  }
+
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text
+    return text.substring(0, maxLength).trim() + "..."
+  }
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-neutral-100">
+        <div className="container mx-auto px-4 lg:px-[120px]">
+          <div className="flex flex-col items-center gap-12">
+            {/* Header */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-48 h-8 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+
+            {/* Loading skeleton dengan layout yang sama */}
+            <div className="w-full flex flex-col gap-[52px]">
+              <div className="flex flex-col lg:flex-row gap-8">
+                <div className="lg:w-[664px] h-[438px] bg-gray-200 rounded-2xl animate-pulse"></div>
+                <div className="flex-1 flex flex-col gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex gap-5">
+                      <div className="w-[168px] h-[168px] bg-gray-200 rounded-xl animate-pulse"></div>
+                      <div className="flex-1 space-y-3">
+                        <div className="w-3/4 h-4 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="w-full h-6 bg-gray-200 rounded animate-pulse"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="py-16 bg-neutral-100">
       <div className="container mx-auto px-4 lg:px-[120px]">
@@ -18,107 +129,85 @@ export default function NewsSection() {
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Featured Article */}
               <div className="lg:w-[664px] flex flex-col gap-4">
-                <div className="flex flex-col gap-4">
-                  <div className="relative w-full h-[250px] md:h-[438px]">
-                    <Image
-                      src="/placeholder.svg?height=438&width=664"
-                      alt="Featured News"
-                      fill
-                      className="object-cover rounded-2xl"
-                    />
+                {featuredNews ? (
+                  <Link href={`/berita-desa/${featuredNews.slug}`}>
+                    <div className="flex flex-col gap-4 group cursor-pointer">
+                      <div className="relative w-full h-[250px] md:h-[438px]">
+                        <Image
+                          src={featuredNews.featured_image || "/placeholder.svg?height=438&width=664"}
+                          alt={featuredNews.title}
+                          fill
+                          className="object-cover rounded-2xl transition-all duration-300 group-hover:brightness-110"
+                        />
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[#3e5880] text-sm font-normal tracking-tight">{featuredNews.author}</span>
+                        <span className="text-[#3e5880] text-sm font-normal tracking-tight">{formatDate(featuredNews.published_at)}</span>
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        <h3 className="text-[#143051] text-2xl font-bold tracking-wide group-hover:text-[#6e7869] transition-colors">
+                          {featuredNews.title}
+                        </h3>
+                        <p className="text-[#143051] text-base font-normal">
+                          {featuredNews.excerpt || truncateText(featuredNews.content, 150)}
+                        </p>
+                        <div className="flex items-center gap-4">
+                          <span className="text-[#3e5880] text-sm font-normal">{featuredNews.category}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ) : (
+                  // Fallback jika tidak ada featured news
+                  <div className="flex flex-col gap-4">
+                    <div className="relative w-full h-[250px] md:h-[438px] bg-gray-200 rounded-2xl flex items-center justify-center">
+                      <p className="text-gray-500">Tidak ada berita unggulan</p>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#3e5880] text-sm font-normal tracking-tight">Penulis Tamu</span>
-                    <span className="text-[#3e5880] text-sm font-normal tracking-tight">12/06/2025</span>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-[#143051] text-2xl font-bold tracking-wide">Festival Budaya Desa Kenteng 2025</h3>
-                  <p className="text-[#143051] text-base font-normal">
-                    Masyarakat Desa Kenteng kembali menggelar festival budaya tahunan yang menampilkan berbagai kesenian tradisional dan kuliner khas daerah
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <span className="text-[#3e5880] text-sm font-normal">Tim Redaksi Desa</span>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Side Articles */}
               <div className="flex-1 flex flex-col justify-between gap-6">
-                {/* Article 1 */}
-                <div className="flex gap-5">
-                  <Image
-                    src="/placeholder.svg?height=168&width=168"
-                    alt="News 1"
-                    width={168}
-                    height={168}
-                    className="w-[120px] h-[120px] md:w-[168px] md:h-[168px] object-cover rounded-xl flex-shrink-0"
-                  />
-                  <div className="flex-1 flex flex-col gap-4">
-                    <div className="flex justify-between items-start text-xs md:text-sm">
-                      <span className="text-[#3e5880] font-normal">Penulis Tamu</span>
-                      <span className="text-[#3e5880] font-normal tracking-tight">10/06/2025</span>
+                {sideNews.length > 0 ? sideNews.map((news, index) => (
+                  <Link key={news.id} href={`/berita-desa/${news.slug}`}>
+                    <div className="flex gap-5 group cursor-pointer">
+                      <Image
+                        src={news.featured_image || "/placeholder.svg?height=168&width=168"}
+                        alt={news.title}
+                        width={168}
+                        height={168}
+                        className="w-[120px] h-[120px] md:w-[168px] md:h-[168px] object-cover rounded-xl flex-shrink-0 transition-all duration-300 group-hover:brightness-110"
+                      />
+                      <div className="flex-1 flex flex-col gap-4">
+                        <div className="flex justify-between items-start text-xs md:text-sm">
+                          <span className="text-[#3e5880] font-normal">{news.author}</span>
+                          <span className="text-[#3e5880] font-normal tracking-tight">{formatDate(news.published_at)}</span>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <h4 className="text-[#143051] text-lg md:text-xl font-bold tracking-tight line-clamp-2 group-hover:text-[#6e7869] transition-colors">
+                            {news.title}
+                          </h4>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[#3e5880] text-sm font-normal">{news.category}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-3">
-                      <h4 className="text-[#143051] text-lg md:text-xl font-bold tracking-tight line-clamp-2">
-                        Panen Raya Organik Semester Pertama
-                      </h4>
+                  </Link>
+                )) : (
+                  // Fallback untuk side articles
+                  Array(3).fill(0).map((_, index) => (
+                    <div key={index} className="flex gap-5">
+                      <div className="w-[120px] h-[120px] md:w-[168px] md:h-[168px] bg-gray-200 rounded-xl flex items-center justify-center">
+                        <span className="text-gray-400 text-xs">No Image</span>
+                      </div>
+                      <div className="flex-1 flex items-center justify-center">
+                        <p className="text-gray-500">Tidak ada berita</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[#3e5880] text-sm font-normal">Kelompok Tani</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Article 2 */}
-                <div className="flex gap-5">
-                  <Image
-                    src="/placeholder.svg?height=168&width=168"
-                    alt="News 2"
-                    width={168}
-                    height={168}
-                    className="w-[120px] h-[120px] md:w-[168px] md:h-[168px] object-cover rounded-xl flex-shrink-0"
-                  />
-                  <div className="flex-1 flex flex-col gap-4">
-                    <div className="flex justify-between items-start text-xs md:text-sm">
-                      <span className="text-[#3e5880] font-normal">Penulis Tamu</span>
-                      <span className="text-[#3e5880] font-normal tracking-tight">08/06/2025</span>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <h4 className="text-[#143051] text-lg md:text-xl font-bold tracking-tight line-clamp-2">
-                        Pembangunan Jalan Desa Tahap II Dimulai
-                      </h4>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[#3e5880] text-sm font-normal">Pemerintah Desa</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Article 3 */}
-                <div className="flex gap-5">
-                  <Image
-                    src="/placeholder.svg?height=168&width=168"
-                    alt="News 3"
-                    width={168}
-                    height={168}
-                    className="w-[120px] h-[120px] md:w-[168px] md:h-[168px] object-cover rounded-xl flex-shrink-0"
-                  />
-                  <div className="flex-1 flex flex-col gap-4">
-                    <div className="flex justify-between items-start text-xs md:text-sm">
-                      <span className="text-[#3e5880] font-normal">Penulis Tamu</span>
-                      <span className="text-[#3e5880] font-normal tracking-tight">05/06/2025</span>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <h4 className="text-[#143051] text-lg md:text-xl font-bold tracking-tight line-clamp-2">
-                        Workshop Kerajinan Bambu untuk Ibu PKK
-                      </h4>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[#3e5880] text-sm font-normal">Tim PKK</span>
-                    </div>
-                  </div>
-                </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -126,165 +215,84 @@ export default function NewsSection() {
             <div className="flex flex-col gap-7">
               {/* Row 1 */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Article 1 */}
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-col gap-4">
-                    <div className="relative w-full h-[210px]">
-                      <Image
-                        src="/placeholder.svg?height=210&width=364"
-                        alt="News Article"
-                        fill
-                        className="object-cover rounded-2xl"
-                      />
+                {gridNews.slice(0, 3).map((news) => (
+                  <Link key={news.id} href={`/berita-desa/${news.slug}`}>
+                    <div className="flex flex-col gap-3 group cursor-pointer">
+                      <div className="flex flex-col gap-4">
+                        <div className="relative w-full h-[210px]">
+                          <Image
+                            src={news.featured_image || "/placeholder.svg?height=210&width=364"}
+                            alt={news.title}
+                            fill
+                            className="object-cover rounded-2xl transition-all duration-300 group-hover:brightness-110"
+                          />
+                          {news.category.toLowerCase() === 'essay' && (
+                            <div className="absolute top-4 left-4 w-10 h-10 bg-[#143051] rounded-sm"></div>
+                          )}
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[#3e5880] text-sm font-normal tracking-tight">{news.author}</span>
+                          <span className="text-[#3e5880] text-sm font-normal tracking-tight">{formatDate(news.published_at)}</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        <h4 className="text-[#143051] text-xl font-bold tracking-tight group-hover:text-[#6e7869] transition-colors">
+                          {news.title}
+                        </h4>
+                        <p className="text-[#143051] text-base font-normal">
+                          {news.excerpt || truncateText(news.content, 100)}
+                        </p>
+                        <div className="flex items-center gap-4">
+                          <span className="text-[#3e5880] text-sm font-normal">{news.category}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">Penulis Tamu</span>
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">03/06/2025</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <h4 className="text-[#143051] text-xl font-bold tracking-tight">Program Bantuan Bibit Unggul</h4>
-                    <p className="text-[#143051] text-base font-normal">
-                      Desa Kenteng menerima bantuan bibit padi unggul dari pemerintah kabupaten untuk meningkatkan produktivitas pertanian
-                    </p>
-                    <div className="flex items-center gap-4">
-                      <span className="text-[#3e5880] text-sm font-normal">Dinas Pertanian</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Article 2 */}
-                <div className="flex flex-col gap-4">
-                  <div className="relative w-full h-[210px]">
-                    <Image
-                      src="/placeholder.svg?height=210&width=364"
-                      alt="Featured Article"
-                      fill
-                      className="object-cover rounded-2xl"
-                    />
-                    <div className="absolute top-4 left-4 w-10 h-10 bg-[#143051] rounded-sm"></div>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">Essay</span>
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">01/06/2025</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <h4 className="text-[#143051] text-xl font-bold tracking-tight">Gotong Royong: Kekuatan Membangun Desa</h4>
-                    <div className="flex items-center gap-4">
-                      <span className="text-[#3e5880] text-sm font-normal">5 menit baca</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Article 3 */}
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-col gap-4">
-                    <div className="relative w-full h-[210px]">
-                      <Image
-                        src="/placeholder.svg?height=210&width=364"
-                        alt="News Article"
-                        fill
-                        className="object-cover rounded-2xl"
-                      />
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">Penulis Tamu</span>
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">30/05/2025</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <h4 className="text-[#143051] text-xl font-bold tracking-tight">Launching Website Desa Terbaru</h4>
-                    <p className="text-[#143051] text-base font-normal">
-                      Desa Kenteng resmi meluncurkan website baru untuk meningkatkan transparansi dan pelayanan kepada masyarakat
-                    </p>
-                    <div className="flex items-center gap-4">
-                      <span className="text-[#3e5880] text-sm font-normal">Tim IT Desa</span>
-                    </div>
-                  </div>
-                </div>
+                  </Link>
+                ))}
               </div>
 
               {/* Row 2 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Article 4 */}
-                <div className="flex flex-col gap-4">
-                  <div className="relative w-full h-[210px]">
-                    <Image
-                      src="/placeholder.svg?height=210&width=364"
-                      alt="Featured Article"
-                      fill
-                      className="object-cover rounded-2xl"
-                    />
-                    <div className="absolute top-4 left-4 w-10 h-10 bg-[#143051] rounded-sm"></div>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">Essay</span>
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">28/05/2025</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <h4 className="text-[#143051] text-xl font-bold tracking-tight">Mempertahankan Tradisi di Era Digital</h4>
-                    <div className="flex items-center gap-4">
-                      <span className="text-[#3e5880] text-sm font-normal">7 menit baca</span>
-                    </div>
-                  </div>
+              {gridNews.length > 3 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {gridNews.slice(3, 6).map((news) => (
+                    <Link key={news.id} href={`/berita-desa/${news.slug}`}>
+                      <div className="flex flex-col gap-4 group cursor-pointer">
+                        <div className="relative w-full h-[210px]">
+                          <Image
+                            src={news.featured_image || "/placeholder.svg?height=210&width=364"}
+                            alt={news.title}
+                            fill
+                            className="object-cover rounded-2xl transition-all duration-300 group-hover:brightness-110"
+                          />
+                          {news.category.toLowerCase() === 'essay' && (
+                            <div className="absolute top-4 left-4 w-10 h-10 bg-[#143051] rounded-sm"></div>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[#3e5880] text-sm font-normal tracking-tight">
+                              {news.category.toLowerCase() === 'essay' ? 'Essay' : news.author}
+                            </span>
+                            <span className="text-[#3e5880] text-sm font-normal tracking-tight">
+                              {formatDate(news.published_at)}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                          <h4 className="text-[#143051] text-xl font-bold tracking-tight group-hover:text-[#6e7869] transition-colors">
+                            {news.title}
+                          </h4>
+                          <div className="flex items-center gap-4">
+                            <span className="text-[#3e5880] text-sm font-normal">
+                              {news.category.toLowerCase() === 'essay' ? calculateReadTime(news.content) : news.category}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-
-                {/* Article 5 */}
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-col gap-4">
-                    <div className="relative w-full h-[210px]">
-                      <Image
-                        src="/placeholder.svg?height=210&width=364"
-                        alt="News Article"
-                        fill
-                        className="object-cover rounded-2xl"
-                      />
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">Penulis Tamu</span>
-                      <span className="text-[#3e5880] font-normal tracking-tight">25/05/2025</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <h4 className="text-[#143051] text-xl font-bold tracking-tight">Pelatihan UMKM Digital</h4>
-                    <p className="text-[#143051] text-base font-normal">
-                      Pelaku UMKM di Desa Kenteng mendapat pelatihan pemasaran digital untuk meningkatkan penjualan produk lokal
-                    </p>
-                    <div className="flex items-center gap-4">
-                      <span className="text-[#3e5880] text-sm font-normal">Dinas Koperasi</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Article 6 */}
-                <div className="flex flex-col gap-4">
-                  <div className="relative w-full h-[210px]">
-                    <Image
-                      src="/placeholder.svg?height=210&width=364"
-                      alt="Featured Article"
-                      fill
-                      className="object-cover rounded-2xl"
-                    />
-                    <div className="absolute top-4 left-4 w-10 h-10 bg-[#143051] rounded-sm"></div>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">Essay</span>
-                      <span className="text-[#3e5880] text-sm font-normal tracking-tight">22/05/2025</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <h4 className="text-[#143051] text-xl font-bold tracking-tight">Wisata Berkelanjutan: Masa Depan Desa</h4>
-                    <div className="flex items-center gap-4">
-                      <span className="text-[#3e5880] text-sm font-normal">8 menit baca</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* CTA Button */}

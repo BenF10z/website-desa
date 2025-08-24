@@ -13,7 +13,7 @@ export default function FAQSection() {
           {/* Kiri: Teks FAQ */}
           <div className="w-full md:w-1/3 flex flex-col gap-2">
             <div className="uppercase text-sm font-bold tracking-[0.2em] text-[#6e7869]">faq</div>
-            <div className="text-3xl md:text-4xl font-bold tracking-wide text-[#1a1a1a]">Frequently Asked Questions</div>
+            <div className="text-3xl md:text-4xl font-bold tracking-wide text-[#1a1a1a]">Pertanyaan yang Sering Diajukan</div>
           </div>
           {/* Kanan: FAQ Accordion */}
           <div className="w-full md:w-2/3">
@@ -22,42 +22,42 @@ export default function FAQSection() {
               <Accordion type="single" collapsible className="w-full divide-y divide-[#6e7869]/20">
                 <AccordionItem value="q1">
                   <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
-                    Where is Kenteng Village located?
+                    Di mana lokasi Desa Kenteng?
                   </AccordionTrigger>
                   <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
-                    Kenteng is nestled in the highlands of Bandungan, Central Java — about 1 hour from Semarang City. It's easy to reach by car or motorbike, and we can help arrange transportation if needed.
+                    Kenteng terletak di dataran tinggi Bandungan, Jawa Tengah — sekitar 1 jam dari Kota Semarang. Mudah dijangkau dengan mobil atau sepeda motor, dan kami dapat membantu mengatur transportasi jika diperlukan.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="q2">
                   <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
-                    What kind of tours do you offer?
+                    Jenis wisata apa yang Anda tawarkan?
                   </AccordionTrigger>
                   <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
-                    We offer a variety of tours: nature walks, cultural experiences, culinary journeys, and hands-on workshops with local artisans. You can join a group or request a custom itinerary.
+                    Kami menawarkan berbagai jenis wisata: jalan-jalan di alam, pengalaman budaya, perjalanan kuliner, dan lokakarya langsung dengan pengrajin lokal. Anda dapat bergabung dengan kelompok atau meminta rencana perjalanan khusus.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="q3">
                   <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
-                    Do I need to book in advance?
+                    Apakah saya perlu memesan di muka?
                   </AccordionTrigger>
                   <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
-                    Advance booking is recommended, especially for weekends and holidays, to ensure availability and the best experience. However, walk-ins are welcome if space allows.
+                    Pemesanan di muka sangat dianjurkan, terutama untuk akhir pekan dan hari libur, untuk memastikan ketersediaan dan pengalaman terbaik. Namun, walk-in juga diterima jika ada tempat yang tersedia.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="q4">
                   <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
-                    Can I visit Kenteng without joining a tour?
+                    Bisakah saya mengunjungi Kenteng tanpa bergabung dalam tur?
                   </AccordionTrigger>
                   <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
-                    Yes, you are welcome to explore Kenteng independently. Our team is happy to provide tips and recommendations for your visit.
+                    Ya, Anda dipersilakan untuk menjelajahi Kenteng secara mandiri. Tim kami dengan senang hati akan memberikan tips dan rekomendasi untuk kunjungan Anda.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="q5">
                   <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
-                    Do you speak English?
+                    Apakah Anda berbicara bahasa Inggris?
                   </AccordionTrigger>
                   <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
-                    Yes, our guides and staff speak English and Bahasa Indonesia. We strive to make every guest feel welcome and understood.
+                    Ya, pemandu dan staf kami berbicara bahasa Inggris dan Bahasa Indonesia. Kami berusaha untuk membuat setiap tamu merasa diterima dan dipahami.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

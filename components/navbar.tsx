@@ -28,7 +28,7 @@ const navigation = [
   { name: "BUMDES", href: "/bumdes" },
   { name: "PAKET WISATA", href: "/paket-wisata" },
   { name: "BERITA DESA", href: "/berita-desa" },
-  { name: "GALERI", href: "/gallery" },
+  // { name: "GALERI", href: "/gallery" },
 ];
 
 export default function Navbar() {

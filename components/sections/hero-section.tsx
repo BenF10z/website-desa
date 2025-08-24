@@ -22,7 +22,7 @@ export default function HeroSection() {
                 Jelajahi Desa Kenteng
               </h1>
               <p className="text-white text-sm sm:text-base md:text-lg font-normal font-sans tracking-tight max-w-lg sm:max-w-xl md:max-w-2xl leading-relaxed">
-                Plan your next adventure with us. Scroll down to discover local tours, events, and real connections.
+                Temukan keindahan alam, budaya, dan kearifan lokal yang ditawarkan oleh Desa Kenteng.
               </p>
             </div>
             <CTAButton href="/paket-wisata" variant="white" size="large">
