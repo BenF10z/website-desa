@@ -21,6 +21,7 @@ interface ImageUploadProps {
   onPathChange?: (path: string) => void;
   placeholder?: string;
   required?: boolean;
+  folder?: string;
 }
 
 export function ImageUpload({ 

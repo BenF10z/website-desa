@@ -12,7 +12,7 @@ export async function GET(
 ) {
   try {
     const { data, error } = await supabase
-      .from("paket_wisata")
+      .from("apbdes")
       .select("*")
       .eq("id", params.id)
       .single()
@@ -22,7 +22,7 @@ export async function GET(
     }
 
     if (!data) {
-      return NextResponse.json({ error: "Paket wisata not found" }, { status: 404 })
+      return NextResponse.json({ error: "Kegiatan APBDes tidak ditemukan" }, { status: 404 })
     }
 
     return NextResponse.json(data)
@@ -39,43 +39,29 @@ export async function PUT(
     const id = parseInt(params.id)
     const body = await request.json()
     const { 
-      name,
-      description,
-      price,
-      duration,
-      location,
-      image_url,
-      image_path,
-      additional_images,
-      additional_image_paths,
-      facilities,
-      itinerary,
-      min_participants,
-      max_participants,
-      contact_person,
-      contact_number,
+      nama_kegiatan,
+      bidang,
+      anggaran_kegiatan,
+      tahun_anggaran,
+      foto_dokumentasi,
+      foto_path,
+      deskripsi,
+      lokasi,
       is_active
     } = body
 
     const { data, error } = await supabase
-      .from("paket_wisata")
+      .from("apbdes")
       .update({
-        name,
-        description,
-        price: parseFloat(price),
-        duration,
-        location,
-        image_url,
-        image_path,
-        additional_images: additional_images || [],
-        additional_image_paths: additional_image_paths || [],
-        facilities: facilities || [],
-        itinerary: itinerary || {},
-        min_participants: parseInt(min_participants) || 1,
-        max_participants: parseInt(max_participants) || 50,
-        contact_person,
-        contact_number,
-        is_active: is_active !== false,
+        nama_kegiatan,
+        bidang,
+        anggaran_kegiatan: parseFloat(anggaran_kegiatan),
+        tahun_anggaran,
+        foto_dokumentasi,
+        foto_path,
+        deskripsi,
+        lokasi,
+        is_active,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)
@@ -100,14 +86,14 @@ export async function DELETE(
 
     // Get the item data to delete associated images
     const { data: itemData } = await supabase
-      .from("paket_wisata")
-      .select("image_path, additional_image_paths")
+      .from("apbdes")
+      .select("foto_path")
       .eq("id", id)
       .single()
 
-    // Delete the item record
+    // Delete the record
     const { error } = await supabase
-      .from("paket_wisata")
+      .from("apbdes")
       .delete()
       .eq("id", id)
 
@@ -115,20 +101,12 @@ export async function DELETE(
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Delete associated images from storage
-    const imagesToDelete = []
-    if (itemData?.image_path) {
-      imagesToDelete.push(itemData.image_path)
-    }
-    if (itemData?.additional_image_paths && Array.isArray(itemData.additional_image_paths)) {
-      imagesToDelete.push(...itemData.additional_image_paths)
-    }
-
-    if (imagesToDelete.length > 0) {
+    // Delete associated image from storage
+    if (itemData?.foto_path) {
       try {
-        await supabase.storage.from("images").remove(imagesToDelete);
+        await supabase.storage.from("images").remove([itemData.foto_path])
       } catch (storageError) {
-        console.error("Error deleting images from storage:", storageError);
+        console.error("Error deleting image from storage:", storageError)
       }
     }
 

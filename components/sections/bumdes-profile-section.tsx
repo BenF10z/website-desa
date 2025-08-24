@@ -24,13 +24,9 @@ export default function BumdesProfileSection() {
             </div>
           </div>
           <div className="text-[#1a1a1a] text-sm md:text-base font-normal font-['Satoshi'] tracking-tight leading-relaxed">
-            BUMDes Kenteng Makmur didirikan pada tahun 2018 sebagai wadah untuk mengembangkan potensi ekonomi desa
-            dan meningkatkan kesejahteraan masyarakat. Dengan modal awal dari dana desa dan partisipasi masyarakat,
-            BUMDes ini telah berkembang menjadi motor penggerak ekonomi desa.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin elementum quam vel dignissim. Mauris rhoncus orci vel tellus dapibus hendrerit. Nunc ultricies ac ante vitae porta. In mattis facilisis commodo. Suspendisse congue lorem nunc, id ullamcorper justo imperdiet interdum. Pellentesque viverra dui ut quam tristique, non porttitor turpis fringilla. Quisque sodales quam pellentesque turpis aliquet elementum.
             <br/><br/>
-            Saat ini, BUMDes Kenteng Makmur mengelola berbagai unit usaha yang meliputi perdagangan, jasa, dan
-            industri pengolahan hasil pertanian. Semua keuntungan yang diperoleh dikembalikan untuk pembangunan desa
-            dan kesejahteraan masyarakat demi masa depan yang lebih baik.
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
           </div>
         </div>
       </div>
@@ -39,14 +35,10 @@ export default function BumdesProfileSection() {
       <div className="w-full flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-20">
         <div className="w-full lg:w-[677px] flex flex-col justify-center items-start gap-8 lg:gap-20 order-2 lg:order-1">
           <div className="text-[#1e1e1e] text-sm md:text-base font-normal font-['Satoshi'] tracking-tight leading-relaxed">
-            Visi kami adalah menjadikan BUMDes sebagai pilar utama perekonomian desa yang berkelanjutan dan berdaya saing.
-            Melalui inovasi dan kolaborasi, kami berkomitmen untuk menciptakan lapangan kerja bagi masyarakat lokal.
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
             <br/><br/>
-            Setiap unit usaha yang kami kelola tidak hanya bertujuan untuk mencari keuntungan, tetapi juga untuk 
-            memberdayakan masyarakat dan melestarikan kearifan lokal. Kami percaya bahwa dengan semangat gotong royong
-            dan kerja keras, BUMDes Kenteng Makmur akan terus tumbuh dan berkembang.
-            <br/><br/>
-            Mari bergabung bersama kami dalam membangun ekonomi desa yang kuat dan berkelanjutan.
+           Maecenas hendrerit sagittis justo eu tristique. Aliquam a orci nunc. Cras porttitor molestie tellus, at efficitur ipsum interdum at. Curabitur sed ante porta, condimentum felis at, porttitor mauris. Vivamus auctor, lectus id consequat vestibulum, risus est sagittis nunc, hendrerit dapibus augue quam quis erat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+           
           </div>
         </div>
         <div className="flex-1 lg:max-w-[443px] order-1 lg:order-2">

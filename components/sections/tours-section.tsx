@@ -8,8 +8,8 @@ export default function ToursSection() {
         <div className="flex flex-col items-center gap-8">
           {/* Judul */}
           <div className="flex flex-col items-center gap-2">
-            <div className="uppercase text-sm font-bold tracking-[0.2em]" style={{ color: '#6E7869' }}>Tours</div>
-            <div className="text-3xl md:text-4xl font-bold tracking-wide" style={{ color: '#1A1A1A' }}>Popular Experiences</div>
+            <div className="uppercase text-sm font-bold tracking-[0.2em]" style={{ color: '#6E7869' }}>Wisata</div>
+            <div className="text-3xl md:text-4xl font-bold tracking-wide" style={{ color: '#1A1A1A' }}>Pengalaman Populer</div>
           </div>
           {/* Card Wisata Slider */}
           <div className="w-full flex flex-col gap-8">

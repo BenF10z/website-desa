@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState, useEffect } from "react"
-import Image from "next/image"
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -10,56 +10,57 @@ import {
   NavigationMenuLink,
   NavigationMenuTrigger,
   NavigationMenuContent,
-} from "@/components/ui/navigation-menu"
-import { ChevronDown } from "lucide-react"
+} from "@/components/ui/navigation-menu";
+import { ChevronDown } from "lucide-react";
 
 const navigation = [
   { name: "BERANDA", href: "/" },
-  { 
-    name: "PROFIL DESA", 
+  { name: "APBDES", href: "/apbdes" },
+  {
+    name: "PROFIL DESA",
     href: "",
     dropdown: [
       { name: "Sejarah Desa", href: "/profil/sejarah" },
       { name: "Visi & Misi", href: "/profil/visi-misi" },
       { name: "Struktur Organisasi", href: "/profil/struktur" },
-    ]
+    ],
   },
   { name: "BUMDES", href: "/bumdes" },
   { name: "PAKET WISATA", href: "/paket-wisata" },
   { name: "BERITA DESA", href: "/berita-desa" },
-  { name: "GALERI", href: "/gallery" },
-]
+  // { name: "GALERI", href: "/gallery" },
+];
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [openDropdowns, setOpenDropdowns] = useState<string[]>([])
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.scrollY
-      setIsScrolled(scrollTop > 50)
-    }
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 50);
+    };
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const toggleDropdown = (name: string, e: React.MouseEvent) => {
-    e.preventDefault()
-    setOpenDropdowns(prev => 
-      prev.includes(name) 
-        ? prev.filter(item => item !== name) 
+    e.preventDefault();
+    setOpenDropdowns((prev) =>
+      prev.includes(name)
+        ? prev.filter((item) => item !== name)
         : [...prev, name]
-    )
-  }
+    );
+  };
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-white/10 backdrop-blur-md shadow-lg' 
-        : 'bg-transparent'
-    }`}>
+    <nav
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        isScrolled ? "bg-white/10 backdrop-blur-md shadow-lg" : "bg-transparent"
+      }`}
+    >
       <div className="max-w-screen-2xl mx-auto px-4 md:px-8 py-4 md:py-6 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center">
@@ -81,7 +82,10 @@ export default function Navbar() {
                   {item.dropdown ? (
                     <>
                       <NavigationMenuTrigger className="text-base font-medium font-poppins px-3 py-2 transition-colors duration-300 text-[#1A3300] hover:text-white !bg-transparent hover:!bg-transparent data-[state=open]:!bg-transparent data-[state=open]:text-[#1A3300] focus:!bg-transparent focus:text-[#1A3300] h-auto rounded-none border-none shadow-none">
-                        <Link href={item.href} className="hover:text-white transition-colors duration-300">
+                        <Link
+                          href={item.href}
+                          className="hover:text-white transition-colors duration-300"
+                        >
                           {item.name}
                         </Link>
                       </NavigationMenuTrigger>
@@ -108,7 +112,7 @@ export default function Navbar() {
                     </>
                   ) : (
                     <NavigationMenuLink asChild>
-                      <Link 
+                      <Link
                         href={item.href}
                         className="text-base font-medium font-poppins px-3 py-2 transition-colors duration-300 text-[#1A3300] hover:text-white"
                       >
@@ -129,13 +133,24 @@ export default function Navbar() {
             className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-300 text-[#1A3300]"
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              width="28"
+              height="28"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
         </div>
       </div>
-      
+
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-md shadow-xl border-t border-gray-100 z-50">
@@ -149,18 +164,18 @@ export default function Navbar() {
                       onClick={(e) => toggleDropdown(item.name, e)}
                     >
                       <span>{item.name}</span>
-                      <ChevronDown 
+                      <ChevronDown
                         className={`h-4 w-4 transition-transform duration-200 ${
-                          openDropdowns.includes(item.name) ? 'rotate-180' : ''
-                        }`} 
+                          openDropdowns.includes(item.name) ? "rotate-180" : ""
+                        }`}
                       />
                     </button>
                     {/* Mobile Dropdown - Conditionally rendered */}
-                    <div 
+                    <div
                       className={`ml-4 space-y-1 border-l-2 border-gray-100 pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
-                        openDropdowns.includes(item.name) 
-                          ? 'max-h-96 opacity-100' 
-                          : 'max-h-0 opacity-0'
+                        openDropdowns.includes(item.name)
+                          ? "max-h-96 opacity-100"
+                          : "max-h-0 opacity-0"
                       }`}
                     >
                       {item.dropdown.map((subItem) => (
@@ -190,5 +205,5 @@ export default function Navbar() {
         </div>
       )}
     </nav>
-  )
+  );
 }

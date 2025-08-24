@@ -9,7 +9,7 @@ const supabase = createClient(
 export async function GET() {
   try {
     const { data, error } = await supabase
-      .from("paket_wisata")
+      .from("apbdes")
       .select("*")
       .order("created_at", { ascending: false })
 
@@ -27,52 +27,38 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { 
-      name,
-      description,
-      price,
-      duration,
-      location,
-      image_url,
-      image_path,
-      additional_images,
-      additional_image_paths,
-      facilities,
-      itinerary,
-      min_participants,
-      max_participants,
-      contact_person,
-      contact_number,
+      nama_kegiatan,
+      bidang,
+      anggaran_kegiatan,
+      tahun_anggaran,
+      foto_dokumentasi,
+      foto_path,
+      deskripsi,
+      lokasi,
       is_active
     } = body
 
     // Validate required fields
-    if (!name || !price) {
+    if (!nama_kegiatan || !bidang || !anggaran_kegiatan) {
       return NextResponse.json(
-        { error: "Nama paket dan harga wajib diisi" }, 
+        { error: "Nama kegiatan, bidang, dan anggaran kegiatan wajib diisi" }, 
         { status: 400 }
       )
     }
 
     const { data, error } = await supabase
-      .from("paket_wisata")
+      .from("apbdes")
       .insert([
         {
-          name,
-          description,
-          price: parseFloat(price),
-          duration,
-          location,
-          image_url,
-          image_path,
-          additional_images: additional_images || [],
-          additional_image_paths: additional_image_paths || [],
-          facilities: facilities || [],
-          itinerary: itinerary || {},
-          min_participants: parseInt(min_participants) || 1,
-          max_participants: parseInt(max_participants) || 50,
-          contact_person,
-          contact_number,
-          is_active: is_active !== false,
+          nama_kegiatan,
+          bidang,
+          anggaran_kegiatan: parseFloat(anggaran_kegiatan),
+          tahun_anggaran: tahun_anggaran || new Date().getFullYear(),
+          foto_dokumentasi,
+          foto_path,
+          deskripsi,
+          lokasi,
+          is_active: is_active !== undefined ? is_active : true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         },
