@@ -11,7 +11,7 @@ interface Tour {
 
 const tours: Tour[] = [
   {
-    src: "/images/village-landscape.jpg",
+    src: "/images/iampelgading.png",
     alt: "Wisata 1",
   },
   {
@@ -19,7 +19,7 @@ const tours: Tour[] = [
     alt: "Wisata 2",
   },
   {
-    src: "/images/village-landscape.jpg",
+    src: "/images/camp.jpg",
     alt: "Wisata 3",
   },
   // Tambahkan data wisata lain di sini

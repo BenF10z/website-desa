@@ -9,8 +9,8 @@ export default function AboutSection() {
           {/* About Kenteng Village */}
           <div className="w-full flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-20">
             <Image
-              src="/images/village-landscape.jpg"
-              alt="Kenteng Village Landscape"
+              src="/images/camp.jpg"
+              alt="Camp"
               width={491}
               height={343}
               className="w-full max-w-[491px] h-[250px] md:h-[343px] lg:w-[491px] lg:h-[343px] rounded-2xl object-cover"
