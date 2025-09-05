@@ -25,7 +25,7 @@ export default function HeroSection() {
                 Temukan keindahan alam, budaya, dan kearifan lokal yang ditawarkan oleh Desa Kenteng.
               </p>
             </div>
-            <CTAButton href="/paket-wisata" variant="white" size="large">
+            <CTAButton href="/profil/sejarah" variant="white" size="large">
               Jelajahi Lebih Lanjut
             </CTAButton>
           </div>

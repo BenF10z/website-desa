@@ -52,14 +52,6 @@ export default function FAQSection() {
                     Ya, Anda dipersilakan untuk menjelajahi Kenteng secara mandiri. Tim kami dengan senang hati akan memberikan tips dan rekomendasi untuk kunjungan Anda.
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="q5">
-                  <AccordionTrigger className="py-6 flex justify-between items-center text-[#6e7869] text-xl font-medium font-sans hover:no-underline focus:no-underline [&_*]:hover:no-underline [&_*]:focus:no-underline">
-                    Apakah Anda berbicara bahasa Inggris?
-                  </AccordionTrigger>
-                  <AccordionContent className="pr-8 text-[#1e1e1e] text-base font-normal font-sans tracking-tight pb-6">
-                    Ya, pemandu dan staf kami berbicara bahasa Inggris dan Bahasa Indonesia. Kami berusaha untuk membuat setiap tamu merasa diterima dan dipahami.
-                  </AccordionContent>
-                </AccordionItem>
               </Accordion>
             </div>
           </div>
